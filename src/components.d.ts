@@ -9,8 +9,8 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     ButtonPrimary: typeof import('./components/shared/ButtonPrimary.vue')['default']
     ButtonSecondary: typeof import('./components/shared/ButtonSecondary.vue')['default']
-    Feature: typeof import('./components/Feature.vue')['default']
-    Features: typeof import('./components/Features.vue')['default']
+    Feature: typeof import('~icons/fe/ature')['default']
+    Features: typeof import('~icons/fe/atures')['default']
     Heading1: typeof import('./components/shared/Heading1.vue')['default']
     Heading2: typeof import('./components/shared/Heading2.vue')['default']
     Hero: typeof import('./components/Hero.vue')['default']
