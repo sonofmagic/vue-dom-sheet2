@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { MessageBox } from 'element-ui'
-import { VueConstructor, provide, reactive, ref, toRefs } from 'vue-demi'
+import { provide, reactive, ref, toRefs } from 'vue-demi'
 import { forEach, throttle } from 'lodash-es'
 import { useWindowScroll } from '@vueuse/core'
 import VirtualList from './components/VirtualList'

@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@antfu/eslint-config': ^0.25.2
   '@floating-ui/dom': ^1.0.3
+  '@types/lodash-es': ^4.17.6
   '@vitejs/plugin-vue2': ^1.1.2
   '@vitejs/plugin-vue2-jsx': ^1.0.3
   '@vue/composition-api': ^1.7.1
@@ -22,7 +23,7 @@ specifiers:
   unplugin-icons: ^0.14.7
   unplugin-vue-components: ^0.21.2
   vite: ^3.0.3
-  vue: ^2.7.8
+  vue: npm:vue@v2-latest
   vue-demi: latest
   vue-fragment: ^1.6.0
   vue-router: ^3.5.4
@@ -30,14 +31,15 @@ specifiers:
   vue-template-es2015-compiler: ^1.9.1
 
 dependencies:
+  '@vue/composition-api': 1.7.1_vue@2.7.13
   vue-demi: 0.13.11_ugk432boennyisqo4tgx5zxzca
 
 devDependencies:
   '@antfu/eslint-config': 0.25.2_wyqvi574yv7oiwfeinomdzmc3m
   '@floating-ui/dom': 1.0.3
+  '@types/lodash-es': 4.17.6
   '@vitejs/plugin-vue2': 1.1.2_vite@3.2.1+vue@2.7.13
   '@vitejs/plugin-vue2-jsx': 1.0.3_vite@3.2.1+vue@2.7.13
-  '@vue/composition-api': 1.7.1_vue@2.7.13
   '@vueuse/core': 9.4.0_ugk432boennyisqo4tgx5zxzca
   add: 2.0.6
   autoprefixer: 10.4.13_postcss@8.4.18
@@ -626,6 +628,16 @@ packages:
 
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/lodash-es/4.17.6:
+    resolution: {integrity: sha512-R+zTeVUKDdfoRxpAryaQNRKk3105Rrgx2CFRClIgRGaqDTdjsm8h6IYA8ir584W3ePzkZfst5xIgDwYrlh9HLg==}
+    dependencies:
+      '@types/lodash': 4.14.186
+    dev: true
+
+  /@types/lodash/4.14.186:
+    resolution: {integrity: sha512-eHcVlLXP0c2FlMPm56ITode2AgLMSa6aJ05JTTbYbI+7EMkCEE5qk2E41d5g2lCVTqRe0GnnRFurmlCsDODrPw==}
     dev: true
 
   /@types/mdast/3.0.10:

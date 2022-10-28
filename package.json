@@ -4,21 +4,22 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/vue-dom-sheet.umd.cjs",
-  "module": "./dist/vue-dom-sheet.js",
+  "main": "./dist/vue-dom-sheet.umd.js",
+  "module": "./dist/vue-dom-sheet.mjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint \"**/*.{vue,ts,js}\"",
     "lint:fix": "eslint \"**/*.{vue,ts,js}\" --fix",
-    "build2": "npx vue-demi-switch 2 && vue-tsc --noEmit && vite build",
-    "build3": "npx vue-demi-switch 3 && vue-tsc --noEmit && vite build"
+    "build2": "npx vue-demi-switch 2 && vite build",
+    "build3": "npx vue-demi-switch 3 && vite build"
   },
   "dependencies": {
+    "@vue/composition-api": "^1.7.1",
     "vue-demi": "latest"
   },
   "peerDependencies": {
-    "@vue/composition-api": "^1.0.0",
+    "@vue/composition-api": "^1.7.1",
     "vue": "^2.0.0 || >=3.0.0"
   },
   "peerDependenciesMeta": {
@@ -33,9 +34,9 @@
   "devDependencies": {
     "@antfu/eslint-config": "^0.25.2",
     "@floating-ui/dom": "^1.0.3",
+    "@types/lodash-es": "^4.17.6",
     "@vitejs/plugin-vue2": "^1.1.2",
     "@vitejs/plugin-vue2-jsx": "^1.0.3",
-    "@vue/composition-api": "^1.7.1",
     "@vueuse/core": "^9.0.0",
     "add": "^2.0.6",
     "autoprefixer": "^10.4.13",
@@ -52,7 +53,7 @@
     "unplugin-icons": "^0.14.7",
     "unplugin-vue-components": "^0.21.2",
     "vite": "^3.0.3",
-    "vue": "^2.7.8",
+    "vue": "npm:vue@v2-latest",
     "vue-fragment": "^1.6.0",
     "vue-router": "^3.5.4",
     "vue-template-compiler": "^2.7.8",
