@@ -2,11 +2,11 @@ import path from 'path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue2'
 
-import Components from 'unplugin-vue-components/vite'
-// import Icons from 'unplugin-icons/vite'
-import IconsResolver from 'unplugin-icons/resolver'
-import AutoImport from 'unplugin-auto-import/vite'
-
+// import Components from 'unplugin-vue-components/vite'
+// // import Icons from 'unplugin-icons/vite'
+// import IconsResolver from 'unplugin-icons/resolver'
+// import AutoImport from 'unplugin-auto-import/vite'
+import vueJsx from '@vitejs/plugin-vue2-jsx'
 const config = defineConfig({
   resolve: {
     alias: {
@@ -20,20 +20,20 @@ const config = defineConfig({
 
   plugins: [
     vue(),
-
-    Components({
-      resolvers: [
-        IconsResolver({
-          componentPrefix: '',
-        }),
-      ],
-      dts: 'src/components.d.ts',
-    }),
+    vueJsx(),
+    // Components({
+    //   resolvers: [
+    //     IconsResolver({
+    //       componentPrefix: '',
+    //     }),
+    //   ],
+    //   dts: 'src/components.d.ts',
+    // }),
     // Icons(),
-    AutoImport({
-      imports: ['@vueuse/core'],
-      dts: 'src/auto-imports.d.ts',
-    }),
+    // AutoImport({
+    //   imports: ['@vueuse/core'],
+    //   dts: 'src/auto-imports.d.ts',
+    // }),
   ],
 
   server: {
