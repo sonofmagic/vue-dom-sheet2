@@ -11,7 +11,7 @@ const props = defineProps<{
 }>()
 
 const events = inject(CellEventsSymbol, {})
-const { contextmenu, dblclick, mousedown, mouseenter, mouseleave, mousemove, mouseup } = (events ?? {}) as Required<ICellEvents>
+const { contextmenu, dblclick, mousedown, mouseenter, mouseleave, mousemove, mouseup, drag, drop } = (events ?? {}) as Required<ICellEvents>
 
 const { index: rowIndex, source } = toRefs(props)
 </script>
@@ -19,67 +19,68 @@ const { index: rowIndex, source } = toRefs(props)
 <template>
   <Fragment>
     <td
-      v-for="(item, colIndex) in source.cells"
-      :key="item.id"
-      data-sheet-cell="1"
+      v-for="(item, colIndex) in source.cells" :key="item.id" data-sheet-cell="1"
       class="vue-dom-sheet-cell p-0 border border-[#EEF0F4] h-[48px] cursor-default select-none relative"
-      :class="[item.selected ? 'selected' : '']"
-      @contextmenu.prevent="
+      :class="[item.selected ? 'selected' : '']" @contextmenu.prevent="
         contextmenu($event, {
           rowIndex,
           colIndex,
           item,
         })
-      "
-      @mousedown="
+      " @mousedown="
         mousedown($event, {
           rowIndex,
           colIndex,
           item,
         })
-      "
-      @mouseup="
+      " @mouseup="
         mouseup($event, {
           rowIndex,
           colIndex,
           item,
         })
-      "
-      @mousemove="
+      " @mousemove="
         mousemove($event, {
           rowIndex,
           colIndex,
           item,
         })
-      "
-      @dblclick="
+      " @dblclick="
         dblclick($event, {
           rowIndex,
           colIndex,
           item,
         })
-      "
-      @mouseleave="
+      " @mouseleave="
         mouseleave($event, {
           rowIndex,
           colIndex,
           item,
         })
-      "
-      @mouseenter="
+      " @mouseenter="
         mouseenter($event, {
           rowIndex,
           colIndex,
           item,
         })
-      "
+      " @drag="drag($event, {
+        rowIndex,
+        colIndex,
+        item,
+      })"
+
+      @dragover.prevent
+      @drop="drop($event, {
+        rowIndex,
+        colIndex,
+        item,
+      })"
     >
       <!-- <slot :rowIndex="rowIndex" :colIndex="colIndex" :source="source" :item="item">
 
       </slot> -->
       <div
-        v-if="item.value"
-        :class="{
+        v-if="item.value" draggable :class="{
           'cursor-pointer': Boolean(item.value),
           'has-note': Boolean(item.note),
         }"
@@ -110,7 +111,8 @@ const { index: rowIndex, source } = toRefs(props)
     right: 1px;
     top: 1px;
     bottom: 1px;
-    @apply bg-gray-900 bg-opacity-10;
+    background-color: rgb(17 24 39 / 0.1);
+
   }
 
   .has-note::after {

@@ -335,6 +335,14 @@ function onContainerScroll(payload: UIEvent) {
     scrollTop: payload.target?.scrollTop ?? 0,
   })
 }
+
+function onDrag(e: DragEvent, attrs: ICellAttrs) {
+  console.log('onDrag', e, attrs)
+}
+
+function onDrop(e: DragEvent, attrs: ICellAttrs) {
+  console.log('onDrop', e, attrs)
+}
 provide(
   CellEventsSymbol,
   reactive({
@@ -345,6 +353,8 @@ provide(
     mouseleave: onMouseleave,
     mousemove: onMousemove,
     mouseup: onMouseup,
+    drag: onDrag,
+    drop: onDrop,
   }),
 )
 </script>
