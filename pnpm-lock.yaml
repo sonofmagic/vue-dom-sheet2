@@ -14,6 +14,7 @@ specifiers:
   element-ui: ^2.15.10
   eslint: ^8.20.0
   lodash-es: ^4.17.21
+  perfect-scrollbar: ^1.5.5
   postcss: ^8.4.18
   sass: ^1.55.0
   tailwindcss: ^3.2.1
@@ -46,6 +47,7 @@ devDependencies:
   element-ui: 2.15.10_vue@2.7.13
   eslint: 8.26.0
   lodash-es: 4.17.21
+  perfect-scrollbar: 1.5.5
   postcss: 8.4.18
   sass: 1.55.0
   tailwindcss: 3.2.1_postcss@8.4.18
@@ -2946,6 +2948,10 @@ packages:
 
   /pathe/0.3.9:
     resolution: {integrity: sha512-6Y6s0vT112P3jD8dGfuS6r+lpa0qqNrLyHPOwvXMnyNTQaYiwgau2DP3aNDsR13xqtGj7rrPo+jFUATpU6/s+g==}
+    dev: true
+
+  /perfect-scrollbar/1.5.5:
+    resolution: {integrity: sha512-dzalfutyP3e/FOpdlhVryN4AJ5XDVauVWxybSkLZmakFE2sS3y3pc4JnSprw8tGmHvkaG5Edr5T7LBTZ+WWU2g==}
     dev: true
 
   /picocolors/1.0.0:
