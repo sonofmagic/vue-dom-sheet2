@@ -4,7 +4,7 @@ import type { ICellAttrs } from '../../types'
 
 import type { ISelectionContext, ISelectionRect, useSelectionOptions } from './type'
 
-export function useSelection() {
+export function useSelection(options: useSelectionOptions) {
   const selectionBorderOffest = 0
   const context: ISelectionContext = {}
   const selectionPosition = ref<ISelectionRect>({

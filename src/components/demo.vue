@@ -25,6 +25,48 @@ const onPrompt = ({ defaultValue, isSingle }: { isSingle: boolean; defaultValue?
     closeOnPressEscape: false,
   })
 }
+
+const closeContextMenu = ({ menuContext }) => {
+  menuContext.close()
+}
+
+function doLock({ menuContext, selectedCellSet }) {
+  selectedCellSet?.forEach((x) => {
+    if (x.value)
+      x.locked = true
+  })
+  menuContext.close()
+}
+
+function unlock({ menuContext, selectedCellSet }) {
+  selectedCellSet?.forEach((x) => {
+    x.locked = false
+  })
+  menuContext.close()
+}
+
+async function doNote({ menuContext, selectedCellSet }) {
+  if (selectedCellSet) {
+    const isSingle = selectedCellSet.size === 1
+    const defaultValue = isSingle ? Array.from(selectedCellSet.values())[0].note : ''
+    const res = await onPrompt({
+      defaultValue,
+      isSingle,
+    })
+
+    selectedCellSet?.forEach((x) => {
+      // @ts-expect-error
+      x.note = res.value
+    })
+  }
+}
+
+function doSetValue({ menuContext, selectedCellSet }, value?: number) {
+  selectedCellSet.forEach((x) => {
+    x.value = value
+  })
+  menuContext.close()
+}
 </script>
 
 <template>
@@ -49,9 +91,60 @@ const onPrompt = ({ defaultValue, isSingle }: { isSingle: boolean; defaultValue?
       </div>
 
       <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
-      <vTable :columns="columns" :on-prompt="onPrompt" :data-source="dataSource" :item-component="item" @scroll="syncScroll" />
+      <vTable :columns="columns" :data-source="dataSource" :item-component="item" @scroll="syncScroll">
+        <template #context-menu="ctx">
+          <div class="w-32 text-center">
+            <div class="w-32 text-center">
+              <div
+                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                @click="closeContextMenu(ctx)"
+              >
+                复制
+              </div>
+              <div
+                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                @click="closeContextMenu(ctx)"
+              >
+                粘贴
+              </div>
+              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doLock(ctx)">
+                锁定
+              </div>
+              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="unlock(ctx)">
+                解锁
+              </div>
+              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doNote(ctx)">
+                备注
+              </div>
+              <div
+                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                @click="closeContextMenu(ctx)"
+              >
+                行/列复制
+              </div>
+              <div
+                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                @click="closeContextMenu(ctx)"
+              >
+                复制上一区间
+              </div>
+              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, 1)">
+                set(1)
+              </div>
+              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, 2)">
+                set(2)
+              </div>
+              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx)">
+                clear
+              </div>
+            </div>
+          </div>
+        </template>
+      </vTable>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+</style>

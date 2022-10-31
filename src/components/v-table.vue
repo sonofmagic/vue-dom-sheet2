@@ -16,17 +16,17 @@ const props = defineProps<{
   dataSource: IDataSourceRow[]
   columns: IColumn[]
   itemComponent: unknown
-  onPrompt: ({
-    defaultValue,
-    isSingle,
-  }: { isSingle: boolean; defaultValue?: string }) => Promise<{
-    value: string
-  }>
+  // onPrompt: ({
+  //   defaultValue,
+  //   isSingle,
+  // }: { isSingle: boolean; defaultValue?: string }) => Promise<{
+  //   value: string
+  // }>
 }>()
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
 }>()
-const { columns, dataSource, itemComponent, onPrompt } = toRefs(props)
+const { columns, dataSource, itemComponent } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
 const { x: windowX, y: windowY } = useWindowScroll()
@@ -219,21 +219,6 @@ function onMouseup(e: MouseEvent, attrs: ICellAttrs) {
     selectCellOver(attrs)
 }
 
-function doLock() {
-  selectedCellSet.value?.forEach((x) => {
-    if (x.value)
-      x.locked = true
-  })
-  closeContextMenu()
-}
-
-function unlock() {
-  selectedCellSet.value?.forEach((x) => {
-    x.locked = false
-  })
-  closeContextMenu()
-}
-
 const dblclickCellAttrs = ref<ICellAttrs>()
 
 function onDblclick(e: MouseEvent, attrs: ICellAttrs) {
@@ -288,19 +273,19 @@ function onMouseenter(e: MouseEvent, attrs: ICellAttrs) {
 }
 
 async function doNote() {
-  if (selectedCellSet.value) {
-    const isSingle = selectedCellSet.value.size === 1
-    const defaultValue = isSingle ? Array.from(selectedCellSet.value.values())[0].note : ''
-    const res = await onPrompt.value({
-      defaultValue,
-      isSingle,
-    })
+  // if (selectedCellSet.value) {
+  //   const isSingle = selectedCellSet.value.size === 1
+  //   const defaultValue = isSingle ? Array.from(selectedCellSet.value.values())[0].note : ''
+  //   const res = await onPrompt.value({
+  //     defaultValue,
+  //     isSingle,
+  //   })
 
-    selectedCellSet.value?.forEach((x) => {
-      // @ts-expect-error
-      x.note = res.value
-    })
-  }
+  //   selectedCellSet.value?.forEach((x) => {
+  //     // @ts-expect-error
+  //     x.note = res.value
+  //   })
+  // }
 }
 
 function onMouseleave(e: MouseEvent, attrs: ICellAttrs) {
@@ -318,13 +303,6 @@ function resetDataSetSelected() {
     })
   })
   selectedCellSet.value.clear()
-}
-
-function doSetValue(value?: number) {
-  selectedCellSet.value.forEach((x) => {
-    x.value = value
-  })
-  closeContextMenu()
 }
 
 function onContainerScroll(payload: UIEvent) {
@@ -396,38 +374,7 @@ provide(
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />
         <ContextMenu :context="menuContext">
-          <div class="w-32 text-center">
-            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="closeContextMenu">
-              复制
-            </div>
-            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="closeContextMenu">
-              粘贴
-            </div>
-            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doLock">
-              锁定
-            </div>
-            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="unlock">
-              解锁
-            </div>
-            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doNote">
-              备注
-            </div>
-            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="closeContextMenu">
-              行/列复制
-            </div>
-            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="closeContextMenu">
-              复制上一区间
-            </div>
-            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(1)">
-              set(1)
-            </div>
-            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(2)">
-              set(2)
-            </div>
-            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue()">
-              clear
-            </div>
-          </div>
+          <slot name="context-menu" :selected-cell-set="selectedCellSet" :menu-context="menuContext" />
         </ContextMenu>
         <Popover :context="valueSelectorContext" placement="bottom-start">
           <div class="bg-white w-[360px] p-2 border">
