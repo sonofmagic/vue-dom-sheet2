@@ -5,7 +5,7 @@ import 'perfect-scrollbar/css/perfect-scrollbar.css'
 const dom = ref()
 
 onMounted(() => {
-  console.log(dom.value)
+  // console.log(dom.value)
   const ps = new PerfectScrollbar(dom.value)
 })
 </script>

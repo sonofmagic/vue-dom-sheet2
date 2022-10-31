@@ -11,6 +11,7 @@ import { Selection, useSelection } from './components/Selection'
 import { Popover, usePopover } from './components/Popover'
 import { CellEventsSymbol } from './contexts/CellEvents'
 import vScrollbar from './directives/scrollbar'
+import 'perfect-scrollbar/css/perfect-scrollbar.css'
 const props = defineProps<{
   dataSource: IDataSourceRow[]
   columns: IColumn[]
@@ -327,16 +328,17 @@ provide(
 </script>
 
 <template>
-  <div v-scrollbar class="relative flex overflow-x-auto">
+  <div v-scrollbar class="relative flex">
     <VirtualList
-      ref="containerRef" v-scrollbar
+      ref="containerRef"
+      v-scrollbar
       table-class="w-auto table-fixed border-collapse text-center bg-white"
-      class="relative overflow-y-auto" data-key="key" :data-sources="dataSource" :data-component="itemComponent"
+      class="relative" data-key="key" :data-sources="dataSource" :data-component="itemComponent"
       :item-scoped-slots="itemScopedSlots"
       @scroll="onContainerScroll"
     >
       <template #thead>
-        <thead class="bg-white z-10 sticky top-0 left-0">
+        <thead class="bg-white z-0 sticky top-0 left-0">
           <tr>
             <th
               v-for="(t, i) in columns" :key="i"
