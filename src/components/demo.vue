@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue-demi'
-import { MessageBox } from 'element-ui'
+import { Checkbox, MessageBox } from 'element-ui'
 // import Sheet from '@/components/Sheet/index.vue'
 
 import vTable from './v-table.vue'
@@ -81,7 +81,7 @@ function doSetValue({ menuContext, selectedCellSet }, value?: number) {
             <div class="table-row-group">
               <div v-for="(row, idx) in dataSource" :key="row.key" class="h-[48px] border table-row">
                 <div class="table-cell p-2">
-                  <el-checkbox />
+                  <Checkbox />
                   选中第{{ idx + 1 }}行
                 </div>
               </div>

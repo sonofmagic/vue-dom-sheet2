@@ -11,7 +11,7 @@ const props = defineProps<{
 }>()
 
 const events = inject(CellEventsSymbol, {})
-const { contextmenu, dblclick, mousedown, mouseenter, mouseleave, mousemove, mouseup, drag, drop, dragstart } = (events ?? {}) as Required<ICellEvents>
+const { contextmenu, dblclick, mousedown, mouseenter, mouseleave, mousemove, mouseup, drag, drop, dragstart, dragend } = (events ?? {}) as Required<ICellEvents>
 
 const { index: rowIndex, source } = toRefs(props)
 </script>
@@ -70,6 +70,12 @@ const { index: rowIndex, source } = toRefs(props)
       })"
 
       @dragstart="dragstart($event, {
+        rowIndex,
+        colIndex,
+        item,
+      })"
+
+      @dragend="dragend($event, {
         rowIndex,
         colIndex,
         item,

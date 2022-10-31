@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 // import { MessageBox } from 'element-ui'
 import { provide, reactive, ref, toRefs } from 'vue-demi'
-import { forEach, throttle } from 'lodash-es'
+import { cloneDeep, forEach, throttle } from 'lodash-es'
 import { useWindowScroll } from '@vueuse/core'
 import VirtualList from './components/VirtualList'
 import { useContainer, useKeyBoard } from './hooks'
@@ -317,16 +317,24 @@ function onContainerScroll(payload: UIEvent) {
   })
 }
 
-function onDrag(e: DragEvent, attrs: ICellAttrs) {
-  console.log('onDrag', e, attrs)
-}
-
+// function onDrag(e: DragEvent, attrs: ICellAttrs) {
+//   console.log('onDrag', e, attrs)
+// }
+const dragCellAttrs = ref<ICellAttrs>()
 function onDrop(e: DragEvent, attrs: ICellAttrs) {
-  console.log('onDrop', e, attrs)
+  // console.log('onDrop', e, attrs)
+  if (dragCellAttrs.value)
+    attrs.item.value = cloneDeep(dragCellAttrs.value.item.value)
 }
 
 function onDragstart(e: DragEvent, attrs: ICellAttrs) {
-  console.log('onDragstart', e, attrs)
+  // console.log('onDragstart', e, attrs)
+  dragCellAttrs.value = attrs
+}
+
+function onDragend(e: DragEvent, attrs: ICellAttrs) {
+  // console.log('onDragend', e, attrs)
+  dragCellAttrs.value = undefined
 }
 provide(
   CellEventsSymbol,
@@ -338,9 +346,10 @@ provide(
     mouseleave: onMouseleave,
     mousemove: onMousemove,
     mouseup: onMouseup,
-    drag: onDrag,
+    // drag: onDrag,
     drop: onDrop,
     dragstart: onDragstart,
+    dragend: onDragend,
   }),
 )
 </script>
