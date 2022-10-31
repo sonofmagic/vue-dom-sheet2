@@ -14,7 +14,7 @@ import { CellEventsSymbol } from './contexts/CellEvents'
 const props = defineProps<{
   dataSource: IDataSourceRow[]
   columns: IColumn[]
-  itemComponent: unknown
+  itemComponent: Function
 
 }>()
 const emit = defineEmits<{
