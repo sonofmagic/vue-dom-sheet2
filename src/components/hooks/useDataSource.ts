@@ -2,7 +2,7 @@ import { ref } from 'vue-demi'
 import dayjs from 'dayjs'
 import type { IDataSourceItem, IDataSourceRow } from '../types'
 
-export default function useDataSource() {
+export default function useDataSource(fn: (...args: any[]) => Promise<any>) {
   const dataSetSource: IDataSourceRow[] = []
   const columns = ref<
     {
@@ -11,6 +11,13 @@ export default function useDataSource() {
       width: number | string
     }[]
   >([])
+
+  // if (fn) {
+  //   fn().then((res) => {
+  //     console.log(res)
+  //   })
+  // }
+
   const firstDay = dayjs().startOf('M')
   for (let i = 0; i < 30; i++) {
     columns.value.push({

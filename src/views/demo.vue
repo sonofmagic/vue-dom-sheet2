@@ -1,11 +1,15 @@
 <script lang="ts" setup>
 import { h, ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
+
+// @ts-expect-error
 import Item from './item.vue'
 
 import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentProps } from '@/components/exports'
 import { Sheet, SheetCell, useDataSource } from '@/components/exports'
-const { columns, dataSource } = useDataSource()
+const { columns, dataSource } = useDataSource(() => {
+  return import('./mock.json')
+})
 const dom = ref<HTMLDivElement>()
 const syncScroll = ({ scrollLeft, scrollTop }: IScrollOffset) => {
   if (dom.value) {
