@@ -80,22 +80,26 @@ const { index: rowIndex, source } = toRefs(props)
 
       </slot> -->
       <div
-        v-if="item.value" draggable :class="{
-          'cursor-pointer': Boolean(item.value),
-          'has-note': Boolean(item.note),
-        }" class="sheet-cell-inner"
+        v-if="item.value" draggable class="sheet-cell-inner"
       >
-        <div class="text-left flex flex-col justify-evenly pl-1.5">
-          <div class="text-[13px] text-[#333333]">
-            加科技看看{{ item.value }}
+        <slot :item="item" :col-index="colIndex" :row-index="rowIndex">
+          <div
+            :class="{
+              'cursor-pointer': Boolean(item.value),
+              'has-note': Boolean(item.note),
+            }" class="text-left flex flex-col justify-evenly pl-1.5"
+          >
+            <div class="text-[13px] text-[#333333]">
+              加科技看看{{ item.value }}
+            </div>
+            <div class="text-xs text-[#B1B9CC]">
+              15:30-18:00
+            </div>
           </div>
-          <div class="text-xs text-[#B1B9CC]">
-            15:30-18:00
+          <div class="text-xs flex items-center pr-1.5">
+            {{ item.locked ? '锁' : '' }}
           </div>
-        </div>
-        <div class="text-xs flex items-center pr-1.5">
-          {{ item.locked ? '锁' : '' }}
-        </div>
+        </slot>
       </div>
     </td>
   </Fragment>

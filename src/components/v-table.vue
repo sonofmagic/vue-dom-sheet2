@@ -16,12 +16,7 @@ const props = defineProps<{
   dataSource: IDataSourceRow[]
   columns: IColumn[]
   itemComponent: unknown
-  // onPrompt: ({
-  //   defaultValue,
-  //   isSingle,
-  // }: { isSingle: boolean; defaultValue?: string }) => Promise<{
-  //   value: string
-  // }>
+
 }>()
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
@@ -270,22 +265,6 @@ function onMouseenter(e: MouseEvent, attrs: ICellAttrs) {
       })
     }
   }
-}
-
-async function doNote() {
-  // if (selectedCellSet.value) {
-  //   const isSingle = selectedCellSet.value.size === 1
-  //   const defaultValue = isSingle ? Array.from(selectedCellSet.value.values())[0].note : ''
-  //   const res = await onPrompt.value({
-  //     defaultValue,
-  //     isSingle,
-  //   })
-
-  //   selectedCellSet.value?.forEach((x) => {
-  //     // @ts-expect-error
-  //     x.note = res.value
-  //   })
-  // }
 }
 
 function onMouseleave(e: MouseEvent, attrs: ICellAttrs) {

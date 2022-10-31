@@ -1,8 +1,11 @@
 export interface IDataSourceItem {
   value?: unknown
   id: string
+  // 选中状态
   selected: boolean
+  // 预留属性
   readonly: boolean
+  // 无法选中
   disabled: boolean
   editing: boolean
   locked: boolean
