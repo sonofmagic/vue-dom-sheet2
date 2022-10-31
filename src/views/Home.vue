@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { version } from 'vue-demi'
-import Demo from '@/components/demo.vue'
+import Demo from './demo.vue'
 console.log(version)
 </script>
 

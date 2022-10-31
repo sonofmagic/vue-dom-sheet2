@@ -3,10 +3,10 @@ import { ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
 // import Sheet from '@/components/Sheet/index.vue'
 
-import vTable from './v-table.vue'
-import type { IScrollOffset } from './types'
-import { useDataSource } from './hooks'
-import item from './Item.vue'
+import item from '@/components/Item.vue'
+import type { IScrollOffset } from '@/components/types'
+import { useDataSource } from '@/components/hooks'
+import vTable from '@/components/v-table.vue'
 const { columns, dataSource } = useDataSource()
 const dom = ref<HTMLDivElement>()
 const syncScroll = ({ scrollLeft, scrollTop }: IScrollOffset) => {

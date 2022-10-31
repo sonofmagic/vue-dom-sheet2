@@ -19,8 +19,7 @@ const { index: rowIndex, source } = toRefs(props)
 <template>
   <Fragment>
     <td
-      v-for="(item, colIndex) in source.cells" :key="item.id" data-sheet-cell="1"
-      class="vue-dom-sheet-cell p-0 border border-[#EEF0F4] h-[48px] cursor-default select-none relative"
+      v-for="(item, colIndex) in source.cells" :key="item.id" data-sheet-cell="1" class="vue-dom-sheet-cell"
       :class="[item.selected ? 'selected' : '']" @contextmenu.prevent="
         contextmenu($event, {
           rowIndex,
@@ -67,21 +66,15 @@ const { index: rowIndex, source } = toRefs(props)
         rowIndex,
         colIndex,
         item,
-      })"
-
-      @dragstart="dragstart($event, {
+      })" @dragstart="dragstart($event, {
         rowIndex,
         colIndex,
         item,
-      })"
-
-      @dragend="dragend($event, {
+      })" @dragend="dragend($event, {
         rowIndex,
         colIndex,
         item,
-      })"
-
-      @dragover.prevent
+      })" @dragover.prevent
     >
       <!-- <slot :rowIndex="rowIndex" :colIndex="colIndex" :source="source" :item="item">
 
@@ -90,8 +83,7 @@ const { index: rowIndex, source } = toRefs(props)
         v-if="item.value" draggable :class="{
           'cursor-pointer': Boolean(item.value),
           'has-note': Boolean(item.note),
-        }"
-        class="sheet-cell-inner select-none pointer-events-auto relative w-full h-full flex justify-between border-l-[2px] border-blue-600"
+        }" class="sheet-cell-inner"
       >
         <div class="text-left flex flex-col justify-evenly pl-1.5">
           <div class="text-[13px] text-[#333333]">
@@ -111,6 +103,8 @@ const { index: rowIndex, source } = toRefs(props)
 
 <style lang="scss">
 .vue-dom-sheet-cell {
+  @apply p-0 border border-[#EEF0F4] h-[48px] cursor-default select-none relative;
+
   &.selected::before {
     position: absolute;
     content: '';
@@ -132,6 +126,10 @@ const { index: rowIndex, source } = toRefs(props)
     width: 0;
     border-top: 11px solid #3380ff;
     border-left: 13px solid transparent;
+  }
+
+  .sheet-cell-inner {
+    @apply select-none pointer-events-auto relative w-full h-full flex justify-between border-l-[2px] border-blue-600;
   }
 }
 </style>
