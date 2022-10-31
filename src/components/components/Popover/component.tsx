@@ -1,17 +1,20 @@
-import { defineComponent, ref, PropType, watch, toRefs } from 'vue-demi'
-import type { IPosition } from '../../types'
-import { computePosition, ReferenceElement, offset, flip, Placement } from '@floating-ui/dom'
-import type { IPopoverContext } from './type'
+import type { PropType } from 'vue-demi'
+import { defineComponent, ref, toRefs, watch } from 'vue-demi'
+import type { Placement, ReferenceElement } from '@floating-ui/dom'
+import { computePosition, flip, offset } from '@floating-ui/dom'
 import { onClickOutside } from '@vueuse/core'
+import type { IPosition } from '../../types'
+import type { IPopoverContext } from './type'
+import './component.scss'
 export const Popover = defineComponent({
   name: 'SheetPopover',
   props: {
     context: {
-      type: Object as PropType<IPopoverContext>
+      type: Object as PropType<IPopoverContext>,
     },
     placement: {
-      type: String as PropType<Placement>
-    }
+      type: String as PropType<Placement>,
+    },
   },
   setup(props) {
     const visible = ref(false)
@@ -29,9 +32,9 @@ export const Popover = defineComponent({
             width: 0,
             height: 0,
             bottom: 0,
-            right: 0
+            right: 0,
           }
-        }
+        },
       }
       if (dom.value) {
         // const rect = dom.value.getBoundingClientRect()
@@ -43,12 +46,12 @@ export const Popover = defineComponent({
             //   mainAxis: 5
             //   // alignmentAxis: -rect.height / 2
             // }),
-            flip()
-          ]
+            flip(),
+          ],
         }).then(({ x, y }) => {
           Object.assign(dom.value!.style, {
             left: `${x}px`,
-            top: `${y}px`
+            top: `${y}px`,
           })
           visible.value = true
         })
@@ -67,7 +70,7 @@ export const Popover = defineComponent({
           context.value.show = show
           context.value.close = close
         }
-      }
+      },
     )
 
     onClickOutside(dom, () => {
@@ -76,14 +79,14 @@ export const Popover = defineComponent({
 
     return {
       visible,
-      dom
+      dom,
     }
   },
   render() {
     return (
-      <div ref="dom" style={{ visibility: this.visible ? 'visible' : 'hidden' }} class="absolute left-0 top-0">
+      <div ref="dom" style={{ visibility: this.visible ? 'visible' : 'hidden' }} class="vue-dom-sheet-popover">
         {this.$slots.default}
       </div>
     )
-  }
+  },
 })

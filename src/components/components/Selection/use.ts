@@ -1,10 +1,10 @@
-import { Ref, computed, defineComponent, onMounted, ref } from 'vue-demi'
+import { computed, ref } from 'vue-demi'
 import { pick } from 'lodash-es'
 import type { ICellAttrs } from '../../types'
-import { IDataSourceItem } from '../../types'
+
 import type { ISelectionContext, ISelectionRect, useSelectionOptions } from './type'
 
-export function useSelection(options: useSelectionOptions) {
+export function useSelection() {
   const selectionBorderOffest = 0
   const context: ISelectionContext = {}
   const selectionPosition = ref<ISelectionRect>({
