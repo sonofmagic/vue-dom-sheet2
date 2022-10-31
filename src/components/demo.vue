@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue-demi'
+import { MessageBox } from 'element-ui'
 // import Sheet from '@/components/Sheet/index.vue'
 
 import vTable from './v-table.vue'
@@ -13,6 +14,16 @@ const syncScroll = ({ scrollLeft, scrollTop }: IScrollOffset) => {
     dom.value.scrollLeft = scrollLeft
     dom.value.scrollTop = scrollTop
   }
+}
+
+const onPrompt = ({ defaultValue, isSingle }: { isSingle: boolean; defaultValue?: string }) => {
+  return MessageBox.prompt('', '添加备注', {
+    inputType: 'textArea',
+    inputValue: defaultValue,
+    inputPlaceholder: '请输入备注',
+    closeOnClickModal: false,
+    closeOnPressEscape: false,
+  })
 }
 </script>
 
@@ -38,7 +49,7 @@ const syncScroll = ({ scrollLeft, scrollTop }: IScrollOffset) => {
       </div>
 
       <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
-      <vTable :columns="columns" :data-source="dataSource" :item-component="item" @scroll="syncScroll" />
+      <vTable :columns="columns" :on-prompt="onPrompt" :data-source="dataSource" :item-component="item" @scroll="syncScroll" />
     </div>
   </div>
 </template>

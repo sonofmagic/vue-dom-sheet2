@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@antfu/eslint-config': ^0.27.0
-  '@floating-ui/dom': ^1.0.3
+  '@floating-ui/dom': ^1.0.4
   '@types/lodash-es': ^4.17.6
   '@vitejs/plugin-vue2': ^2.0.0
   '@vitejs/plugin-vue2-jsx': ^1.0.3
@@ -36,7 +36,7 @@ dependencies:
 
 devDependencies:
   '@antfu/eslint-config': 0.27.0_wyqvi574yv7oiwfeinomdzmc3m
-  '@floating-ui/dom': 1.0.3
+  '@floating-ui/dom': 1.0.4
   '@types/lodash-es': 4.17.6
   '@vitejs/plugin-vue2': 2.0.0_vite@3.2.1+vue@2.7.13
   '@vitejs/plugin-vue2-jsx': 1.0.3_vite@3.2.1+vue@2.7.13
@@ -500,8 +500,8 @@ packages:
     resolution: {integrity: sha512-bO37brCPfteXQfFY0DyNDGB3+IMe4j150KFQcgJ5aBP295p9nBGeHEs/p0czrRbtlHq4Px/yoPXO/+dOCcF4uA==}
     dev: true
 
-  /@floating-ui/dom/1.0.3:
-    resolution: {integrity: sha512-6H1kwjkOZKabApNtXRiYHvMmYJToJ1DV7rQ3xc/WJpOABhQIOJJOdz2AOejj8X+gcybaFmBpisVTZxBZAM3V0w==}
+  /@floating-ui/dom/1.0.4:
+    resolution: {integrity: sha512-maYJRv+sAXTy4K9mzdv0JPyNW5YPVHrqtY90tEdI6XNpuLOP26Ci2pfwPsKBA/Wh4Z3FX5sUrtUFTdMYj9v+ug==}
     dependencies:
       '@floating-ui/core': 1.0.1
     dev: true

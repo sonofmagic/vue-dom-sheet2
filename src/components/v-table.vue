@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { MessageBox } from 'element-ui'
+// import { MessageBox } from 'element-ui'
 import { provide, reactive, ref, toRefs } from 'vue-demi'
 import { forEach, throttle } from 'lodash-es'
 import { useWindowScroll } from '@vueuse/core'
@@ -16,10 +16,17 @@ const props = defineProps<{
   dataSource: IDataSourceRow[]
   columns: IColumn[]
   itemComponent: unknown
+  onPrompt: ({
+    defaultValue,
+    isSingle,
+  }: { isSingle: boolean; defaultValue?: string }) => Promise<{
+    value: string
+  }>
 }>()
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
 }>()
+const { columns, dataSource, itemComponent, onPrompt } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
 const { x: windowX, y: windowY } = useWindowScroll()
@@ -51,8 +58,6 @@ const {
     scrollY: windowY,
   },
 })
-
-const { columns, dataSource, itemComponent } = toRefs(props)
 
 const currentSelectionValues = ref<IDataSourceItem[]>()
 const startSelection = ref(false)
@@ -156,9 +161,9 @@ function onMousedown(e: MouseEvent, attrs: ICellAttrs) {
     }
     if (!controlState.value)
       resetDataSetSelected()
-      // forEach(currentSelectionValues.value, x => {
-      //   x.selected = true
-      // })
+    // forEach(currentSelectionValues.value, x => {
+    //   x.selected = true
+    // })
 
     startEventTarget.value = target
     const rect = getBoundingClientRect(startEventTarget.value)
@@ -284,15 +289,13 @@ function onMouseenter(e: MouseEvent, attrs: ICellAttrs) {
 
 async function doNote() {
   if (selectedCellSet.value) {
-    const single = selectedCellSet.value.size === 1
-    const defaultNote = single ? Array.from(selectedCellSet.value.values())[0].note : ''
-    const res = await MessageBox.prompt('', '添加备注', {
-      inputType: 'textArea',
-      inputValue: defaultNote,
-      inputPlaceholder: '请输入备注',
-      closeOnClickModal: false,
-      closeOnPressEscape: false,
+    const isSingle = selectedCellSet.value.size === 1
+    const defaultValue = isSingle ? Array.from(selectedCellSet.value.values())[0].note : ''
+    const res = await onPrompt.value({
+      defaultValue,
+      isSingle,
     })
+
     selectedCellSet.value?.forEach((x) => {
       // @ts-expect-error
       x.note = res.value
@@ -343,6 +346,10 @@ function onDrag(e: DragEvent, attrs: ICellAttrs) {
 function onDrop(e: DragEvent, attrs: ICellAttrs) {
   console.log('onDrop', e, attrs)
 }
+
+function onDragstart(e: DragEvent, attrs: ICellAttrs) {
+  console.log('onDragstart', e, attrs)
+}
 provide(
   CellEventsSymbol,
   reactive({
@@ -355,17 +362,25 @@ provide(
     mouseup: onMouseup,
     drag: onDrag,
     drop: onDrop,
+    dragstart: onDragstart,
   }),
 )
 </script>
 
 <template>
   <div class="relative flex overflow-x-auto">
-    <VirtualList ref="containerRef" table-class="w-auto table-fixed border-collapse text-center bg-white" class="relative overflow-y-auto" data-key="key" :data-sources="dataSource" :data-component="itemComponent" @scroll="onContainerScroll">
+    <VirtualList
+      ref="containerRef" table-class="w-auto table-fixed border-collapse text-center bg-white"
+      class="relative overflow-y-auto" data-key="key" :data-sources="dataSource" :data-component="itemComponent"
+      @scroll="onContainerScroll"
+    >
       <template #thead>
         <thead class="bg-white z-10 sticky top-0 left-0">
           <tr>
-            <th v-for="(t, i) in columns" :key="i" class="p-0 h-[48px] text-center border border-[#EEF0F4] cursor-pointer">
+            <th
+              v-for="(t, i) in columns" :key="i"
+              class="p-0 h-[48px] text-center border border-[#EEF0F4] cursor-pointer"
+            >
               {{ t.title }}
             </th>
           </tr>
@@ -373,12 +388,9 @@ provide(
       </template>
       <template #colgroup>
         <col
-          v-for="col in columns"
-          :key="col.key"
-          :style="{
+          v-for="col in columns" :key="col.key" :style="{
             'min-width': `${col.width}px`,
-          }"
-          :width="col.width"
+          }" :width="col.width"
         >
       </template>
       <template #append>
@@ -422,7 +434,10 @@ provide(
             <div>未定义</div>
             <input class="border" placeholder="请输入">
             <div class="overflow-auto h-[200px]">
-              <div v-for="i in 30" :key="i" class="flex justify-around cursor-pointer hover:bg-blue-300" @click="selectValue($event, i)">
+              <div
+                v-for="i in 30" :key="i" class="flex justify-around cursor-pointer hover:bg-blue-300"
+                @click="selectValue($event, i)"
+              >
                 <div class="flex-1">
                   撒大声地
                 </div>
@@ -451,4 +466,6 @@ provide(
   </div>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+
+</style>

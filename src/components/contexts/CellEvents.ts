@@ -11,6 +11,7 @@ export interface ICellEvents {
   mouseenter?: (payload: MouseEvent, attrs: ICellAttrs) => void
   drag?: (payload: DragEvent, attrs: ICellAttrs) => void
   drop?: (payload: DragEvent, attrs: ICellAttrs) => void
+  dragstart?: (payload: DragEvent, attrs: ICellAttrs) => void
 }
 
 export const CellEventsSymbol = Symbol('CellEventsSymbol') as InjectionKey<UnwrapNestedRefs<ICellEvents>>
