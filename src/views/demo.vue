@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
-import type { IScrollOffset } from '@/components/exports'
+import type { ICellAttrs, IScrollOffset } from '@/components/exports'
 import { Sheet, SheetCell, useDataSource } from '@/components/exports'
 const { columns, dataSource } = useDataSource()
 const dom = ref<HTMLDivElement>()
@@ -62,6 +62,13 @@ function doSetValue({ menuContext, selectedCellSet }, value?: number) {
     x.value = value
   })
   menuContext.close()
+}
+
+const selectValue: (e: MouseEvent, attrs: ICellAttrs, value: unknown) => void = (e, attrs, value) => {
+  e.stopPropagation()
+
+  if (attrs)
+    attrs.item.value = value
 }
 </script>
 
@@ -146,6 +153,25 @@ function doSetValue({ menuContext, selectedCellSet }, value?: number) {
             </div>
             <div v-if="attrs?.item.note" class="text-[#B1B9CC]">
               备注:{{ attrs?.item.note }}
+            </div>
+          </div>
+        </template>
+        <template #value-selector="{ attrs }">
+          <div class="bg-white w-[360px] p-2 border">
+            <div>未定义</div>
+            <input class="border" placeholder="请输入">
+            <div class="overflow-auto h-[200px]">
+              <div
+                v-for="i in 30" :key="i" class="flex justify-around cursor-pointer hover:bg-blue-300"
+                @click="selectValue($event, attrs, i)"
+              >
+                <div class="flex-1">
+                  撒大声地
+                </div>
+                <div class="flex-1">
+                  {{ i }}
+                </div>
+              </div>
             </div>
           </div>
         </template>

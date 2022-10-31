@@ -241,12 +241,6 @@ function _onMousemove(e: MouseEvent) {
 
 const onMousemove = throttle(_onMousemove, 20)
 
-const selectValue: (e: MouseEvent, value: unknown) => void = (e, value) => {
-  e.stopPropagation()
-  if (dblclickCellAttrs.value)
-    dblclickCellAttrs.value.item.value = value
-}
-
 const detailCellAttrs = ref<ICellAttrs>()
 
 function onMouseenter(e: MouseEvent, attrs: ICellAttrs) {
@@ -364,23 +358,7 @@ provide(
           <slot name="context-menu" :selected-cell-set="selectedCellSet" :menu-context="menuContext" />
         </ContextMenu>
         <Popover :context="valueSelectorContext" placement="bottom-start">
-          <div class="bg-white w-[360px] p-2 border">
-            <div>未定义</div>
-            <input class="border" placeholder="请输入">
-            <div class="overflow-auto h-[200px]">
-              <div
-                v-for="i in 30" :key="i" class="flex justify-around cursor-pointer hover:bg-blue-300"
-                @click="selectValue($event, i)"
-              >
-                <div class="flex-1">
-                  撒大声地
-                </div>
-                <div class="flex-1">
-                  {{ i }}
-                </div>
-              </div>
-            </div>
-          </div>
+          <slot name="value-selector" :attrs="dblclickCellAttrs" />
         </Popover>
         <Popover :context="showDetailContext" placement="bottom-start">
           <slot name="detail" :attrs="detailCellAttrs" />
