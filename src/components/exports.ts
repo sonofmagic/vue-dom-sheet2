@@ -7,4 +7,5 @@ export type VSheetCellType = InstanceType<typeof SheetCell>
 export * from './components'
 export * from './contexts'
 export * from './hooks'
+export * from './types'
 export { Sheet, SheetCell }

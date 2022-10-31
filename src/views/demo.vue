@@ -1,12 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
-// import Sheet from '@/components/Sheet/index.vue'
-
-import item from '@/components/Item.vue'
-import type { IScrollOffset } from '@/components/types'
-import { useDataSource } from '@/components/hooks'
-import vTable from '@/components/v-table.vue'
+import type { IScrollOffset } from '@/components/exports'
+import { Sheet, SheetCell, useDataSource } from '@/components/exports'
 const { columns, dataSource } = useDataSource()
 const dom = ref<HTMLDivElement>()
 const syncScroll = ({ scrollLeft, scrollTop }: IScrollOffset) => {
@@ -91,7 +87,7 @@ function doSetValue({ menuContext, selectedCellSet }, value?: number) {
       </div>
 
       <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
-      <vTable :columns="columns" :data-source="dataSource" :item-component="item" @scroll="syncScroll">
+      <Sheet :columns="columns" :data-source="dataSource" :item-component="SheetCell" @scroll="syncScroll">
         <template #context-menu="ctx">
           <div class="w-32 text-center">
             <div class="w-32 text-center">
@@ -140,7 +136,7 @@ function doSetValue({ menuContext, selectedCellSet }, value?: number) {
             </div>
           </div>
         </template>
-      </vTable>
+      </Sheet>
     </div>
   </div>
 </template>
