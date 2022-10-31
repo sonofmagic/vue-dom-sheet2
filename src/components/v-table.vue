@@ -10,7 +10,7 @@ import { ContextMenu, useContextMenu } from './components/ContextMenu'
 import { Selection, useSelection } from './components/Selection'
 import { Popover, usePopover } from './components/Popover'
 import { CellEventsSymbol } from './contexts/CellEvents'
-
+import vScrollbar from './directives/scrollbar'
 const props = defineProps<{
   dataSource: IDataSourceRow[]
   columns: IColumn[]
@@ -327,9 +327,10 @@ provide(
 </script>
 
 <template>
-  <div class="relative flex overflow-x-auto">
+  <div v-scrollbar class="relative flex overflow-x-auto">
     <VirtualList
-      ref="containerRef" table-class="w-auto table-fixed border-collapse text-center bg-white"
+      ref="containerRef" v-scrollbar
+      table-class="w-auto table-fixed border-collapse text-center bg-white"
       class="relative overflow-y-auto" data-key="key" :data-sources="dataSource" :data-component="itemComponent"
       :item-scoped-slots="itemScopedSlots"
       @scroll="onContainerScroll"
