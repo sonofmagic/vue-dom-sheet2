@@ -76,11 +76,7 @@ const { index: rowIndex, source } = toRefs(props)
         item,
       })" @dragover.prevent
     >
-      <div
-        v-if="item.value" draggable class="sheet-cell-inner"
-      >
-        <slot :item="item" :col-index="colIndex" :row-index="rowIndex" :source="source" />
-      </div>
+      <slot class="sheet-cell-inner" :item="item" :col-index="colIndex" :row-index="rowIndex" :source="source" />
     </td>
   </Fragment>
 </template>

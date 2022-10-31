@@ -12,7 +12,7 @@ const { colIndex, rowIndex, item, source } = toRefs(props)
 </script>
 
 <template>
-  <div class="border-l-2 border-[blue] h-full flex justify-between">
+  <div v-if="item.value" draggable class="border-l-2 border-[blue] h-full flex justify-between">
     <div
       :class="{
         'cursor-pointer': Boolean(item.value),
