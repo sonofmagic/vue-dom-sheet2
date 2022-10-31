@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ref } from 'vue-demi'
+import { h, ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
+import Item from './item.vue'
 import type { ICellAttrs, IScrollOffset } from '@/components/exports'
 import { Sheet, SheetCell, useDataSource } from '@/components/exports'
 const { columns, dataSource } = useDataSource()
@@ -70,6 +71,14 @@ const selectValue: (e: MouseEvent, attrs: ICellAttrs, value: unknown) => void = 
   if (attrs)
     attrs.item.value = value
 }
+
+const itemScopedSlots = {
+  default: (props) => {
+    return h(Item, {
+      props,
+    })
+  },
+}
 </script>
 
 <template>
@@ -94,7 +103,7 @@ const selectValue: (e: MouseEvent, attrs: ICellAttrs, value: unknown) => void = 
       </div>
 
       <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
-      <Sheet :columns="columns" :data-source="dataSource" :item-component="SheetCell" @scroll="syncScroll">
+      <Sheet :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource" :item-component="SheetCell" @scroll="syncScroll">
         <template #context-menu="ctx">
           <div class="w-32 text-center">
             <div class="w-32 text-center">

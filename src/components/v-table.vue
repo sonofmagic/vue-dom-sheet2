@@ -15,12 +15,12 @@ const props = defineProps<{
   dataSource: IDataSourceRow[]
   columns: IColumn[]
   itemComponent: Function
-
+  itemScopedSlots?: Record<string, unknown>
 }>()
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
 }>()
-const { columns, dataSource, itemComponent } = toRefs(props)
+const { columns, dataSource, itemComponent, itemScopedSlots } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
 const { x: windowX, y: windowY } = useWindowScroll()
@@ -331,6 +331,7 @@ provide(
     <VirtualList
       ref="containerRef" table-class="w-auto table-fixed border-collapse text-center bg-white"
       class="relative overflow-y-auto" data-key="key" :data-sources="dataSource" :data-component="itemComponent"
+      :item-scoped-slots="itemScopedSlots"
       @scroll="onContainerScroll"
     >
       <template #thead>

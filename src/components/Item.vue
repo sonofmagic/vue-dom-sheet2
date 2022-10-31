@@ -76,30 +76,10 @@ const { index: rowIndex, source } = toRefs(props)
         item,
       })" @dragover.prevent
     >
-      <!-- <slot :rowIndex="rowIndex" :colIndex="colIndex" :source="source" :item="item">
-
-      </slot> -->
       <div
         v-if="item.value" draggable class="sheet-cell-inner"
       >
-        <slot :item="item" :col-index="colIndex" :row-index="rowIndex">
-          <div
-            :class="{
-              'cursor-pointer': Boolean(item.value),
-              'has-note': Boolean(item.note),
-            }" class="text-left flex flex-col justify-evenly pl-1.5"
-          >
-            <div class="text-[13px] text-[#333333]">
-              加科技看看{{ item.value }}
-            </div>
-            <div class="text-xs text-[#B1B9CC]">
-              15:30-18:00
-            </div>
-          </div>
-          <div class="text-xs flex items-center pr-1.5">
-            {{ item.locked ? '锁' : '' }}
-          </div>
-        </slot>
+        <slot :item="item" :col-index="colIndex" :row-index="rowIndex" :source="source" />
       </div>
     </td>
   </Fragment>
@@ -117,7 +97,6 @@ const { index: rowIndex, source } = toRefs(props)
     top: 1px;
     bottom: 1px;
     background-color: rgb(17 24 39 / 0.1);
-
   }
 
   .has-note::after {
@@ -133,7 +112,7 @@ const { index: rowIndex, source } = toRefs(props)
   }
 
   .sheet-cell-inner {
-    @apply select-none pointer-events-auto relative w-full h-full flex justify-between border-l-[2px] border-blue-600;
+    @apply select-none pointer-events-auto relative w-full h-full;
   }
 }
 </style>

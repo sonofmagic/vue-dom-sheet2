@@ -30,7 +30,6 @@ export default function useDataSource() {
         disabled: false,
         editing: false,
         locked: false,
-        note: '',
       }
       tr.push(td)
     }
