@@ -53,6 +53,7 @@ export const Item = defineComponent({
 
   render(h) {
     const { tag, component, extraProps = {}, index, source, scopedSlots = {}, uniqueKey, slotComponent } = this
+
     const props = {
       ...extraProps,
       source,

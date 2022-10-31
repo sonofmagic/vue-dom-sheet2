@@ -15,7 +15,6 @@
     "build3": "npx vue-demi-switch 3 && vite build"
   },
   "dependencies": {
-    "@vue/composition-api": "^1.7.1",
     "vue-demi": "latest"
   },
   "peerDependencies": {

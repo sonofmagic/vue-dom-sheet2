@@ -1,5 +1,5 @@
-export interface IDataSourceItem {
-  value?: unknown
+export interface IDataSourceItem<T = unknown> {
+  value?: T
   id: string
   // 选中状态
   selected: boolean
@@ -9,12 +9,12 @@ export interface IDataSourceItem {
   disabled: boolean
   editing: boolean
   locked: boolean
-  note?: string
+  // note?: string
 }
 
-export interface IDataSourceRow {
+export interface IDataSourceRow<T= unknown> {
   key: string
-  cells: IDataSourceItem[]
+  cells: IDataSourceItem<T>[]
 }
 
 export interface ICellAttrs {

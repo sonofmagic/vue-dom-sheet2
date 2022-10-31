@@ -136,6 +136,19 @@ function doSetValue({ menuContext, selectedCellSet }, value?: number) {
             </div>
           </div>
         </template>
+        <template #detail="{ attrs }">
+          <div class="bg-white w-[160px] text-xs border px-2 py-1 space-y-1">
+            <div class="text-[13px] text-[#333333]">
+              {{ attrs?.item.value }}的值啊啊
+            </div>
+            <div class="text-[#333333]">
+              11:11-33:22 24.00h
+            </div>
+            <div v-if="attrs?.item.note" class="text-[#B1B9CC]">
+              备注:{{ attrs?.item.note }}
+            </div>
+          </div>
+        </template>
       </Sheet>
     </div>
   </div>

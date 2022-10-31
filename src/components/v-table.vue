@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-// import { MessageBox } from 'element-ui'
 import { provide, reactive, ref, toRefs } from 'vue-demi'
 import { cloneDeep, forEach, throttle } from 'lodash-es'
 import { useWindowScroll } from '@vueuse/core'
@@ -384,17 +383,7 @@ provide(
           </div>
         </Popover>
         <Popover :context="showDetailContext" placement="bottom-start">
-          <div class="bg-white w-[160px] text-xs border px-2 py-1 space-y-1">
-            <div class="text-[13px] text-[#333333]">
-              {{ detailCellAttrs?.item.value }}的值啊啊
-            </div>
-            <div class="text-[#333333]">
-              11:11-33:22 24.00h
-            </div>
-            <div v-if="detailCellAttrs?.item.note" class="text-[#B1B9CC]">
-              备注:{{ detailCellAttrs?.item.note }}
-            </div>
-          </div>
+          <slot name="detail" :attrs="detailCellAttrs" />
         </Popover>
       </template>
     </VirtualList>
