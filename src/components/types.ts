@@ -1,3 +1,5 @@
+import type { IContextMenuContext } from './components'
+
 export interface IDataSourceItem<T = unknown> {
   value?: T
   id: string
@@ -41,4 +43,16 @@ export interface IColumn {
   key: string | number
   title: string
   width: number | string
+}
+
+export interface ItemComponentProps {
+  colIndex: number
+  rowIndex: number
+  source: IDataSourceRow
+  item: IDataSourceItem
+}
+
+export interface ContextMenuSlotContext {
+  selectedCellSet: Set<IDataSourceItem>
+  menuContext: IContextMenuContext
 }

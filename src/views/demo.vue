@@ -2,7 +2,8 @@
 import { h, ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
 import Item from './item.vue'
-import type { ICellAttrs, IScrollOffset } from '@/components/exports'
+
+import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentProps } from '@/components/exports'
 import { Sheet, SheetCell, useDataSource } from '@/components/exports'
 const { columns, dataSource } = useDataSource()
 const dom = ref<HTMLDivElement>()
@@ -23,11 +24,11 @@ const onPrompt = ({ defaultValue, isSingle }: { isSingle: boolean; defaultValue?
   })
 }
 
-const closeContextMenu = ({ menuContext }) => {
+const closeContextMenu = ({ menuContext }: ContextMenuSlotContext) => {
   menuContext.close()
 }
 
-function doLock({ menuContext, selectedCellSet }) {
+function doLock({ menuContext, selectedCellSet }: ContextMenuSlotContext) {
   selectedCellSet?.forEach((x) => {
     if (x.value)
       x.locked = true
@@ -35,14 +36,14 @@ function doLock({ menuContext, selectedCellSet }) {
   menuContext.close()
 }
 
-function unlock({ menuContext, selectedCellSet }) {
+function unlock({ menuContext, selectedCellSet }: ContextMenuSlotContext) {
   selectedCellSet?.forEach((x) => {
     x.locked = false
   })
   menuContext.close()
 }
 
-async function doNote({ menuContext, selectedCellSet }) {
+async function doNote({ menuContext, selectedCellSet }: ContextMenuSlotContext) {
   if (selectedCellSet) {
     const isSingle = selectedCellSet.size === 1
     const defaultValue = isSingle ? Array.from(selectedCellSet.values())[0].note : ''
@@ -58,9 +59,16 @@ async function doNote({ menuContext, selectedCellSet }) {
   }
 }
 
-function doSetValue({ menuContext, selectedCellSet }, value?: number) {
+function doSetValue({ menuContext, selectedCellSet }: ContextMenuSlotContext, value?: number) {
   selectedCellSet.forEach((x) => {
     x.value = value
+  })
+  menuContext.close()
+}
+
+function setDisabled({ selectedCellSet, menuContext }: ContextMenuSlotContext, flag: boolean) {
+  selectedCellSet.forEach((x) => {
+    x.disabled = flag
   })
   menuContext.close()
 }
@@ -73,7 +81,7 @@ const selectValue: (e: MouseEvent, attrs: ICellAttrs, value: unknown) => void = 
 }
 
 const itemScopedSlots = {
-  default: (props) => {
+  default: (props: ItemComponentProps) => {
     return h(Item, {
       props,
     })
@@ -107,7 +115,7 @@ const itemScopedSlots = {
         <template #context-menu="ctx">
           <div class="w-32 text-center">
             <div class="w-32 text-center">
-              <div
+              <!-- <div
                 class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
                 @click="closeContextMenu(ctx)"
               >
@@ -118,7 +126,7 @@ const itemScopedSlots = {
                 @click="closeContextMenu(ctx)"
               >
                 粘贴
-              </div>
+              </div> -->
               <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doLock(ctx)">
                 锁定
               </div>
@@ -127,6 +135,12 @@ const itemScopedSlots = {
               </div>
               <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doNote(ctx)">
                 备注
+              </div>
+              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="setDisabled(ctx, true)">
+                禁用
+              </div>
+              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="setDisabled(ctx, false)">
+                解禁
               </div>
               <div
                 class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"

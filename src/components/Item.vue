@@ -20,7 +20,7 @@ const { index: rowIndex, source } = toRefs(props)
   <Fragment>
     <td
       v-for="(item, colIndex) in source.cells" :key="item.id" data-sheet-cell="1" class="vue-dom-sheet-cell"
-      :class="[item.selected ? 'selected' : '']" @contextmenu.prevent="
+      :class="[item.selected ? 'selected' : undefined, item.disabled ? 'disabled' : undefined]" @contextmenu.prevent="
         contextmenu($event, {
           rowIndex,
           colIndex,
@@ -93,6 +93,17 @@ const { index: rowIndex, source } = toRefs(props)
     top: 1px;
     bottom: 1px;
     background-color: rgb(17 24 39 / 0.1);
+  }
+
+  &.disabled::before {
+    position: absolute;
+    content: '';
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    background-color: rgba(192, 196, 204, 0.10);
+    cursor: not-allowed;
   }
 
   .has-note::after {
