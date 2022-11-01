@@ -318,18 +318,26 @@ function onDragend(e: DragEvent, attrs: ICellAttrs) {
   dragCellAttrs.value = undefined
 }
 
-function selectColumn(idx: number) {
+function selectColumn(idx: number, value = true) {
   forEach(dataSource.value, (row) => {
     const item = row.cells[idx]
-    item.selected = true
-    selectedCellSet.value.add(item)
+    item.selected = value
+    if (value)
+      selectedCellSet.value.add(item)
+
+    else
+      selectedCellSet.value.delete(item)
   })
 }
 
-function selectRow(idx: number) {
+function selectRow(idx: number, value = true) {
   forEach(dataSource.value[idx].cells, (item) => {
-    item.selected = true
-    selectedCellSet.value.add(item)
+    item.selected = value
+    if (value)
+      selectedCellSet.value.add(item)
+
+    else
+      selectedCellSet.value.delete(item)
   })
 }
 

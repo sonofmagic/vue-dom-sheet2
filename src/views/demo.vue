@@ -127,7 +127,10 @@ const itemScopedSlots = {
             <div class="table-row-group">
               <div v-for="(row, idx) in dataSource" :key="row.key" class="h-[48px] border table-row">
                 <div class="table-cell p-2">
-                  <Checkbox @change="sheetRef?.selectRow(idx)" />
+                  <Checkbox
+                    :true-label="true" :false-label="false"
+                    @change="(v) => sheetRef?.selectRow(idx, v)"
+                  />
                   选中第{{ idx + 1 }}行
                 </div>
               </div>
@@ -138,9 +141,8 @@ const itemScopedSlots = {
 
       <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
       <Sheet
-        ref="sheetRef" :item-scoped-slots="itemScopedSlots" :columns="columns"
-        :data-source="dataSource" :item-component="SheetCell"
-        @scroll="syncScroll"
+        ref="sheetRef" :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource"
+        :item-component="SheetCell" @scroll="syncScroll"
       >
         <template #context-menu="ctx">
           <div class="w-32 text-center">
