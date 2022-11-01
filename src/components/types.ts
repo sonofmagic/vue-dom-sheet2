@@ -14,7 +14,7 @@ export interface IDataSourceItem<T = unknown> {
   // note?: string
 }
 
-export interface IDataSourceRow<T= unknown> {
+export interface IDataSourceRow<T = unknown> {
   key: string
   cells: IDataSourceItem<T>[]
 }
@@ -32,6 +32,12 @@ export interface ISheetRowCustomEvent {
 export interface IPosition {
   x: number
   y: number
+  width?: number
+  height?: number
+  bottom?: number
+  right?: number
+  left?: number
+  top?: number
 }
 
 export interface IScrollOffset {

@@ -2,7 +2,7 @@ import type { PropType } from 'vue-demi'
 import { Ref, defineComponent, onMounted, ref, toRefs, watch } from 'vue-demi'
 import { onClickOutside } from '@vueuse/core'
 import type { ReferenceElement } from '@floating-ui/dom'
-import { computePosition, flip, offset } from '@floating-ui/dom'
+import { autoPlacement, computePosition, flip, offset, shift } from '@floating-ui/dom'
 import type { IPosition } from '../../types'
 import type { IContextMenuContext } from './type'
 import { IContextMenuProps } from './type'
@@ -25,17 +25,21 @@ export const ContextMenu = defineComponent({
     }
 
     function show(e: IPosition) {
+      const width = e.width ?? 0
+      const height = e.height ?? 0
+      const bottom = e.bottom ?? 0
+      const right = e.right ?? 0
       const virtualEl: ReferenceElement = {
         getBoundingClientRect() {
           return {
-            x: e.x, // e.x,
-            y: e.y, // e.y,
+            x: e.x,
+            y: e.y,
             left: e.x,
             top: e.y,
-            width: 0,
-            height: 0,
-            bottom: 0,
-            right: 0,
+            width,
+            height,
+            bottom,
+            right,
           }
         },
       }
@@ -49,7 +53,9 @@ export const ContextMenu = defineComponent({
               mainAxis: 10,
               alignmentAxis: -rect.height / 2,
             }),
-            flip(),
+            // flip(),
+            autoPlacement(),
+            shift(),
           ],
         }).then(({ x, y }) => {
           Object.assign(menuRef.value!.style, {

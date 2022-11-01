@@ -58,17 +58,21 @@ const currentSelectionValues = ref<IDataSourceItem[]>()
 const startSelection = ref(false)
 const selectedCellSet = ref(new Set<IDataSourceItem>())
 
-const closeContextMenu = () => {
-  menuContext.close()
-}
-
 function onContextmenu(e: MouseEvent, attrs: ICellAttrs) {
   e.preventDefault()
   if (selectionContext.el) {
     const rect = getBoundingClientRect(selectionContext.el)
     menuContext.show({
-      x: rect.left + rect.width,
-      y: rect.top + rect.height / 2,
+      x: rect.left,
+      y: rect.top,
+      width: rect.width,
+      height: rect.height,
+    })
+  }
+  else {
+    menuContext.show({
+      x: e.x,
+      y: e.y,
     })
   }
 }
@@ -224,7 +228,9 @@ function onDblclick(e: MouseEvent, attrs: ICellAttrs) {
 
     valueSelectorContext.show({
       x: rect.left,
-      y: rect.bottom,
+      y: rect.top,
+      width: rect.width,
+      height: rect.height,
     })
     dblclickCellAttrs.value = attrs
   }
@@ -255,7 +261,9 @@ function onMouseenter(e: MouseEvent, attrs: ICellAttrs) {
       detailCellAttrs.value = attrs
       showDetailContext.show({
         x: rect.left,
-        y: rect.bottom,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height,
       })
     }
   }
@@ -398,9 +406,12 @@ provide(
 <style lang="scss">
 .vue-dom-sheet-wrapper {
   @apply relative flex;
-  .ps__rail-x,.ps__rail-y{
+
+  .ps__rail-x,
+  .ps__rail-y {
     z-index: 2;
   }
+
   // .ps__thumb-x,
   // .ps__thumb-y {
   //   z-index: 2;

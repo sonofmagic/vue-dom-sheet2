@@ -3,8 +3,8 @@ import { h, ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
 import dayjs from 'dayjs'
 // @ts-expect-error
+import { cloneDeep } from 'lodash-es'
 import Item from './item.vue'
-
 import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentProps, VSheetType } from '@/components/exports'
 import { Sheet, SheetCell, useDataSource, vScrollbar } from '@/components/exports'
 const sheetRef = ref<VSheetType>()
@@ -26,7 +26,7 @@ const { columns, dataSource } = useDataSource(async () => {
   return {
     columns,
     rows,
-    childrenKey: 'shiftId',
+    // childrenKey: 'shiftId',
     rowKey: 'personId',
     children: 'shiftList',
   }
@@ -87,7 +87,7 @@ async function doNote({ menuContext, selectedCellSet }: ContextMenuSlotContext) 
 
 function doSetValue({ menuContext, selectedCellSet }: ContextMenuSlotContext, value?: unknown) {
   selectedCellSet.forEach((x) => {
-    x.value = value
+    x.value = cloneDeep(value)
   })
   menuContext.close()
 }
@@ -195,6 +195,7 @@ const itemScopedSlots = {
                   name: '测试数据',
                   startTime: '11:11',
                   endTime: '11:11',
+                  remark: '',
                 })"
               >
                 set value
