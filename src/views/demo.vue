@@ -70,7 +70,8 @@ function unlock({ menuContext, selectedCellSet }: ContextMenuSlotContext) {
 async function doNote({ menuContext, selectedCellSet }: ContextMenuSlotContext) {
   if (selectedCellSet) {
     const isSingle = selectedCellSet.size === 1
-    const defaultValue = isSingle ? Array.from(selectedCellSet.values())[0].note : ''
+    // @ts-expect-error
+    const defaultValue = isSingle ? Array.from(selectedCellSet.values())[0].value.remark : ''
     const res = await onPrompt({
       defaultValue,
       isSingle,
@@ -78,7 +79,7 @@ async function doNote({ menuContext, selectedCellSet }: ContextMenuSlotContext) 
 
     selectedCellSet?.forEach((x) => {
       // @ts-expect-error
-      x.note = res.value
+      x.value.remark = res.value
     })
   }
 }
@@ -187,7 +188,7 @@ const itemScopedSlots = {
               >
                 复制上一区间
               </div>
-              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, 1)">
+              <!-- <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, 1)">
                 set(1)
               </div>
               <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, 2)">
@@ -195,20 +196,20 @@ const itemScopedSlots = {
               </div>
               <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx)">
                 clear
-              </div>
+              </div> -->
             </div>
           </div>
         </template>
         <template #detail="{ attrs }">
           <div class="bg-white w-[160px] text-xs border px-2 py-1 space-y-1">
             <div class="text-[13px] text-[#333333]">
-              {{ attrs?.item.value }}的值啊啊
+              {{ attrs?.item.value.name }}
             </div>
             <div class="text-[#333333]">
-              11:11-33:22 24.00h
+              {{ attrs?.item.value.startTime }}-{{ attrs?.item.value.endTime }} {{ attrs?.item.value.duration }}h
             </div>
-            <div v-if="attrs?.item.note" class="text-[#B1B9CC]">
-              备注:{{ attrs?.item.note }}
+            <div v-if="attrs?.item.value.remark" class="text-[#B1B9CC]">
+              备注:{{ attrs?.item.value.remark }}
             </div>
           </div>
         </template>

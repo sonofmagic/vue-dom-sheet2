@@ -16,14 +16,14 @@ const { colIndex, rowIndex, item, source } = toRefs(props)
     <div
       :class="{
         'cursor-pointer': Boolean(item.value),
-        'has-note': Boolean(item.note),
+        'has-note': Boolean(item.value.remark),
       }" class="text-left flex flex-col justify-evenly pl-1.5"
     >
       <div class="text-[13px] text-[#333333]">
-        加科技看看{{ item.value }}
+        {{ item.value.name }}
       </div>
       <div class="text-xs text-[#B1B9CC]">
-        15:30-18:00
+        {{ item.value.startTime }}-{{ item.value.endTime }}
       </div>
     </div>
     <div class="text-xs flex items-center pr-1.5">
