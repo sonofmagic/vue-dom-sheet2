@@ -1,11 +1,14 @@
 {
   "name": "vue-dom-sheet",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "files": [
     "dist"
   ],
   "main": "./dist/vue-dom-sheet.umd.js",
   "module": "./dist/vue-dom-sheet.mjs",
+  "exports": {
+    "css": "./dist/style.css"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",

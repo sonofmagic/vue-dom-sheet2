@@ -10,7 +10,7 @@ import { ContextMenu, useContextMenu } from './components/ContextMenu'
 import { Selection, useSelection } from './components/Selection'
 import { Popover, usePopover } from './components/Popover'
 import { CellEventsSymbol } from './contexts/CellEvents'
-import vScrollbar from './directives/scrollbar'
+import { vScrollbar } from './directives'
 import 'perfect-scrollbar/css/perfect-scrollbar.css'
 const props = defineProps<{
   dataSource: IDataSourceRow[]
@@ -330,12 +330,9 @@ provide(
 <template>
   <div v-scrollbar class="relative flex">
     <VirtualList
-      ref="containerRef"
-      v-scrollbar
-      table-class="w-auto table-fixed border-collapse text-center bg-white"
+      ref="containerRef" v-scrollbar table-class="w-auto table-fixed border-collapse text-center bg-white"
       class="relative" data-key="key" :data-sources="dataSource" :data-component="itemComponent"
-      :item-scoped-slots="itemScopedSlots"
-      @scroll="onContainerScroll"
+      :item-scoped-slots="itemScopedSlots" @scroll="onContainerScroll"
     >
       <template #thead>
         <thead class="bg-white z-0 sticky top-0 left-0">
