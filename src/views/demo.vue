@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 import Item from './item.vue'
 
 import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentProps } from '@/components/exports'
-import { Sheet, SheetCell, useDataSource } from '@/components/exports'
+import { Sheet, SheetCell, useDataSource, vScrollbar } from '@/components/exports'
 const { columns, dataSource } = useDataSource(async () => {
   const { data } = await import('./mock.json')
   console.log(data)
