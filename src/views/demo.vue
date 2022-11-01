@@ -1,14 +1,34 @@
 <script lang="ts" setup>
 import { h, ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
-
+import dayjs from 'dayjs'
 // @ts-expect-error
 import Item from './item.vue'
 
 import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentProps } from '@/components/exports'
 import { Sheet, SheetCell, useDataSource } from '@/components/exports'
-const { columns, dataSource } = useDataSource(() => {
-  return import('./mock.json')
+const { columns, dataSource } = useDataSource(async () => {
+  const { data } = await import('./mock.json')
+  console.log(data)
+  const columns = []
+  const rows = data
+  const columnsLength = 30
+  const firstDay = dayjs().startOf('M')
+  for (let i = 0; i < columnsLength; i++) {
+    columns.push({
+      width: 120,
+      title: firstDay.add(i, 'day').format('YYYY-MM-DD'),
+      key: i,
+    })
+  }
+
+  return {
+    columns,
+    rows,
+    childrenKey: 'shiftId',
+    rowKey: 'personId',
+    children: 'shiftList',
+  }
 })
 const dom = ref<HTMLDivElement>()
 const syncScroll = ({ scrollLeft, scrollTop }: IScrollOffset) => {
@@ -115,7 +135,10 @@ const itemScopedSlots = {
       </div>
 
       <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
-      <Sheet :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource" :item-component="SheetCell" @scroll="syncScroll">
+      <Sheet
+        :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource"
+        :item-component="SheetCell" @scroll="syncScroll"
+      >
         <template #context-menu="ctx">
           <div class="w-32 text-center">
             <div class="w-32 text-center">
@@ -140,10 +163,16 @@ const itemScopedSlots = {
               <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doNote(ctx)">
                 备注
               </div>
-              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="setDisabled(ctx, true)">
+              <div
+                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                @click="setDisabled(ctx, true)"
+              >
                 禁用
               </div>
-              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="setDisabled(ctx, false)">
+              <div
+                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                @click="setDisabled(ctx, false)"
+              >
                 解禁
               </div>
               <div
