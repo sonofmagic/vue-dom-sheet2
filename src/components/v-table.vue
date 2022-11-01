@@ -309,6 +309,31 @@ function onDragend(e: DragEvent, attrs: ICellAttrs) {
   // console.log('onDragend', e, attrs)
   dragCellAttrs.value = undefined
 }
+
+function selectColumn(idx: number) {
+  forEach(dataSource.value, (row) => {
+    const item = row.cells[idx]
+    item.selected = true
+    selectedCellSet.value.add(item)
+  })
+}
+
+function selectRow(idx: number) {
+  forEach(dataSource.value[idx].cells, (item) => {
+    item.selected = true
+    selectedCellSet.value.add(item)
+  })
+}
+
+// <{
+//   selectColumn: typeof selectColumn
+//   selectRow: typeof selectRow
+// }>
+defineExpose({
+  selectColumn,
+  selectRow,
+})
+
 provide(
   CellEventsSymbol,
   reactive({
@@ -328,18 +353,19 @@ provide(
 </script>
 
 <template>
-  <div v-scrollbar class="relative flex">
+  <div v-scrollbar class="vue-dom-sheet-wrapper">
     <VirtualList
       ref="containerRef" v-scrollbar table-class="w-auto table-fixed border-collapse text-center bg-white"
       class="relative" data-key="key" :data-sources="dataSource" :data-component="itemComponent"
       :item-scoped-slots="itemScopedSlots" @scroll="onContainerScroll"
     >
       <template #thead>
-        <thead class="bg-white z-0 sticky top-0 left-0">
+        <thead class="sticky top-0 left-0 z-[1]">
           <tr>
             <th
               v-for="(t, i) in columns" :key="i"
-              class="p-0 h-[48px] text-center border border-[#EEF0F4] cursor-pointer"
+              class="p-0 h-[48px] text-center border border-[#EEF0F4] cursor-pointer bg-white"
+              @click.stop="selectColumn(i)"
             >
               {{ t.title }}
             </th>
@@ -370,5 +396,14 @@ provide(
 </template>
 
 <style lang="scss">
-
+.vue-dom-sheet-wrapper {
+  @apply relative flex;
+  .ps__rail-x,.ps__rail-y{
+    z-index: 2;
+  }
+  // .ps__thumb-x,
+  // .ps__thumb-y {
+  //   z-index: 2;
+  // }
+}
 </style>

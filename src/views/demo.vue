@@ -84,7 +84,7 @@ async function doNote({ menuContext, selectedCellSet }: ContextMenuSlotContext) 
   }
 }
 
-function doSetValue({ menuContext, selectedCellSet }: ContextMenuSlotContext, value?: number) {
+function doSetValue({ menuContext, selectedCellSet }: ContextMenuSlotContext, value?: unknown) {
   selectedCellSet.forEach((x) => {
     x.value = value
   })
@@ -188,15 +188,18 @@ const itemScopedSlots = {
               >
                 复制上一区间
               </div>
-              <!-- <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, 1)">
-                set(1)
-              </div>
-              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, 2)">
-                set(2)
+              <div
+                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, {
+                  name: '测试数据',
+                  startTime: '11:11',
+                  endTime: '11:11',
+                })"
+              >
+                set value
               </div>
               <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx)">
                 clear
-              </div> -->
+              </div>
             </div>
           </div>
         </template>
