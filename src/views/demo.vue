@@ -5,8 +5,9 @@ import dayjs from 'dayjs'
 // @ts-expect-error
 import Item from './item.vue'
 
-import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentProps } from '@/components/exports'
+import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentProps, VSheetType } from '@/components/exports'
 import { Sheet, SheetCell, useDataSource, vScrollbar } from '@/components/exports'
+const sheetRef = ref<VSheetType>()
 const { columns, dataSource } = useDataSource(async () => {
   const { data } = await import('./mock.json')
   console.log(data)
@@ -126,7 +127,7 @@ const itemScopedSlots = {
             <div class="table-row-group">
               <div v-for="(row, idx) in dataSource" :key="row.key" class="h-[48px] border table-row">
                 <div class="table-cell p-2">
-                  <Checkbox />
+                  <Checkbox @change="sheetRef?.selectRow(idx)" />
                   选中第{{ idx + 1 }}行
                 </div>
               </div>
@@ -137,8 +138,9 @@ const itemScopedSlots = {
 
       <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
       <Sheet
-        :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource"
-        :item-component="SheetCell" @scroll="syncScroll"
+        ref="sheetRef" :item-scoped-slots="itemScopedSlots" :columns="columns"
+        :data-source="dataSource" :item-component="SheetCell"
+        @scroll="syncScroll"
       >
         <template #context-menu="ctx">
           <div class="w-32 text-center">
