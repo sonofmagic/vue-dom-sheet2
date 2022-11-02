@@ -2,13 +2,11 @@
 import { provide, reactive, ref, toRefs } from 'vue-demi'
 import { cloneDeep, forEach, throttle } from 'lodash-es'
 import { useWindowScroll } from '@vueuse/core'
-import VirtualList from './components/VirtualList'
+import { ContextMenu, Popover, Selection, VirtualList, useContextMenu, usePopover, useSelection } from './components'
+
 import { useContainer, useKeyBoard } from './hooks'
 import { getBoundingClientRect, getDirection } from './utils'
 import type { ICellAttrs, IColumn, IDataSourceItem, IDataSourceRow, IScrollOffset } from './types'
-import { ContextMenu, useContextMenu } from './components/ContextMenu'
-import { Selection, useSelection } from './components/Selection'
-import { Popover, usePopover } from './components/Popover'
 import { CellEventsSymbol } from './contexts/CellEvents'
 import { vScrollbar } from './directives'
 import 'perfect-scrollbar/css/perfect-scrollbar.css'
@@ -371,9 +369,10 @@ provide(
 <template>
   <div v-scrollbar class="vue-dom-sheet-wrapper">
     <VirtualList
-      ref="containerRef" v-scrollbar table table-class="w-auto table-fixed border-collapse text-center bg-white"
-      class="relative" data-key="key" :data-sources="dataSource" :data-component="itemComponent"
-      :item-scoped-slots="itemScopedSlots" @scroll="onContainerScroll"
+      ref="containerRef" v-scrollbar table
+      table-class="w-auto table-fixed border-collapse text-center bg-white" class="relative" data-key="key"
+      :data-sources="dataSource" :data-component="itemComponent" :item-scoped-slots="itemScopedSlots"
+      @scroll="onContainerScroll"
     >
       <template #thead>
         <thead class="sticky top-0 left-0 z-[1]">
