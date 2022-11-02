@@ -15,7 +15,9 @@
       "@vueuse/core"
     ],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ]
     },
     "lib": [
       "esnext",
@@ -37,5 +39,10 @@
   ],
   "vueCompilerOptions": {
     "target": 2.7
-  }
+  },
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }
