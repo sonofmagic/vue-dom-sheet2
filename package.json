@@ -64,5 +64,24 @@
     "vue-template-compiler": "^2.7.8",
     "vue-template-es2015-compiler": "^1.9.1",
     "vue3": "npm:vue@3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sonofmagic/vue-dom-sheet2.git"
+  },
+  "author": "SonOfMagic <qq1324318532@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sonofmagic/vue-dom-sheet2/issues"
+  },
+  "homepage": "https://github.com/sonofmagic/vue-dom-sheet2#readme",
+  "keywords": [
+    "excel",
+    "sheet",
+    "component",
+    "grid",
+    "table",
+    "cell",
+    "spread"
+  ]
 }
