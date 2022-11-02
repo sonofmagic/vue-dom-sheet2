@@ -120,6 +120,10 @@ export const VirtualProps = {
   itemScopedSlots: {
     type: Object,
   },
+  table: {
+    type: [Boolean],
+    default: false,
+  },
 }
 
 export const ItemProps = {

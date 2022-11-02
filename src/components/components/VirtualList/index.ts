@@ -326,7 +326,7 @@ const VirtualList = defineComponent({
   render(h) {
     const { header, footer, colgroup, append, thead, tfoot } = this.$slots
     const { padFront, padBehind } = this.range
-    const { isHorizontal, pageMode, rootTag, wrapTag, wrapClass, wrapStyle, headerTag, headerClass, headerStyle, footerTag, footerClass, footerStyle, colgroupClass, colgroupStyle, tableClass, tableStyle } = this
+    const { isHorizontal, pageMode, rootTag, wrapTag, wrapClass, wrapStyle, headerTag, headerClass, headerStyle, footerTag, footerClass, footerStyle, colgroupClass, colgroupStyle, tableClass, tableStyle, table } = this
     const paddingStyle = { padding: isHorizontal ? `0px ${padBehind}px 0px ${padFront}px` : `${padFront}px 0px ${padBehind}px` }
     const wrapperStyle = wrapStyle ? Object.assign({}, wrapStyle, paddingStyle) : paddingStyle
 
@@ -366,35 +366,37 @@ const VirtualList = defineComponent({
             },
             style: wrapperStyle,
           },
-          [
-            h(
-              'table',
-              {
-                class: tableClass,
-                style: tableStyle,
-              },
-              [
-                colgroup
-                  ? h(
-                    Slot,
-                    {
-                      class: colgroupClass,
-                      style: colgroupStyle,
-                      props: {
-                        tag: 'colgroup',
-                        event: EVENT_TYPE.SLOT,
-                        uniqueKey: SLOT_TYPE.COLGROUP,
-                      },
-                    },
-                    colgroup,
-                  )
-                  : null,
-                thead,
-                h('tbody', {}, this.getRenderSlots(h)),
-                tfoot,
-              ],
-            ),
-          ],
+          table
+            ? [
+                h(
+                  'table',
+                  {
+                    class: tableClass,
+                    style: tableStyle,
+                  },
+                  [
+                    colgroup
+                      ? h(
+                        Slot,
+                        {
+                          class: colgroupClass,
+                          style: colgroupStyle,
+                          props: {
+                            tag: 'colgroup',
+                            event: EVENT_TYPE.SLOT,
+                            uniqueKey: SLOT_TYPE.COLGROUP,
+                          },
+                        },
+                        colgroup,
+                      )
+                      : null,
+                    thead,
+                    h('tbody', {}, this.getRenderSlots(h)),
+                    tfoot,
+                  ],
+                ),
+              ]
+            : this.getRenderSlots(h),
         ),
 
         // footer slot

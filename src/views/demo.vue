@@ -5,14 +5,24 @@ import dayjs from 'dayjs'
 // @ts-expect-error
 import { cloneDeep } from 'lodash-es'
 import Item from './item.vue'
+import yAxisItem from './yAxisItem.vue'
 import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentProps, VSheetType } from '@/components/exports'
-import { Sheet, SheetCell, useDataSource, vScrollbar } from '@/components/exports'
+import { Sheet, SheetCell, VirtualList, useDataSource, vScrollbar } from '@/components/exports'
 const sheetRef = ref<VSheetType>()
-const { columns, dataSource } = useDataSource(async () => {
+const { columns, dataSource, rows } = useDataSource(async () => {
   const { data } = await import('./mock.json')
-  console.log(data)
+
   const columns = []
-  const rows = data
+  const rows = []
+  for (let i = 0; i < 50; i++) {
+    rows.push(...cloneDeep(data.map((x, j) => {
+      return {
+        ...x,
+        personId: x.personId + i + j,
+      }
+    })))
+  }
+
   const columnsLength = 30
   const firstDay = dayjs().startOf('M')
   for (let i = 0; i < columnsLength; i++) {
@@ -118,10 +128,14 @@ const itemScopedSlots = {
 <template>
   <div class="max-w-[100vw] max-h-[100vh]">
     <div class="flex relative p-16 h-screen">
-      <div class="mr-2 flex-shrink-0 w-[200px] flex flex-col">
+      <div class="mr-2 flex-shrink-0 w-[200px] flex flex-col overflow-hidden">
         <div class="text-lg p-2 h-[48px] flex-shrink-0">
           阿斯蒂芬
         </div>
+        <!-- <VirtualList
+          ref="dom" class="flex-1 overflow-y-auto w-full" data-key="personId" :data-sources="rows"
+          :data-component="yAxisItem"
+        /> -->
         <div ref="dom" class="flex-1 overflow-y-hidden">
           <div class="table border-collapse w-full">
             <div class="table-row-group">
@@ -137,6 +151,22 @@ const itemScopedSlots = {
             </div>
           </div>
         </div>
+        <!-- <div class="flex-1 flex"> -->
+
+        <!-- <div class="table border-collapse w-full">
+            <div class="table-row-group">
+              <div v-for="(row, idx) in rows" :key="row.key" class="h-[48px] border table-row">
+                <div class="table-cell p-2">
+                  <Checkbox
+                    :true-label="true" :false-label="false"
+                    @change="(v) => sheetRef?.selectRow(idx, v)"
+                  />
+                  选中第{{ idx + 1 }}行
+                </div>
+              </div>
+            </div>
+          </div> -->
+        <!-- </div> -->
       </div>
 
       <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->

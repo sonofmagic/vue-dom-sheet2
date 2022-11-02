@@ -371,7 +371,7 @@ provide(
 <template>
   <div v-scrollbar class="vue-dom-sheet-wrapper">
     <VirtualList
-      ref="containerRef" v-scrollbar table-class="w-auto table-fixed border-collapse text-center bg-white"
+      ref="containerRef" v-scrollbar table table-class="w-auto table-fixed border-collapse text-center bg-white"
       class="relative" data-key="key" :data-sources="dataSource" :data-component="itemComponent"
       :item-scoped-slots="itemScopedSlots" @scroll="onContainerScroll"
     >
