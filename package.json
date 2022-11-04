@@ -63,7 +63,8 @@
     "vue-router": "^3.5.4",
     "vue-template-compiler": "^2.7.8",
     "vue-template-es2015-compiler": "^1.9.1",
-    "vue3": "npm:vue@3"
+    "vue3": "npm:vue@3",
+    "mitt": "^3.0.0"
   },
   "repository": {
     "type": "git",

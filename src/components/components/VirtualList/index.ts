@@ -3,10 +3,10 @@
  */
 // @ts-nocheck
 import { defineComponent } from 'vue-demi'
+import mitt from 'mitt'
 import Virtual from './virtual'
 import { Item, Slot } from './item'
 import { VirtualProps } from './props'
-
 const EVENT_TYPE = {
   ITEM: 'item_resize',
   SLOT: 'slot_resize',
@@ -52,13 +52,16 @@ const VirtualList = defineComponent({
     this.directionKey = this.isHorizontal ? 'scrollLeft' : 'scrollTop'
 
     this.installVirtual()
-
+    const emitter = mitt()
     // listen item size change
-    this.$on(EVENT_TYPE.ITEM, this.onItemResized)
-
+    // this.$on(EVENT_TYPE.ITEM, this.onItemResized)
+    emitter.on(EVENT_TYPE.ITEM, this.onItemResized)
     // listen slot size change
     if (this.$slots.header || this.$slots.footer)
-      this.$on(EVENT_TYPE.SLOT, this.onSlotResized)
+      emitter.on(EVENT_TYPE.SLOT, this.onSlotResized)
+      // this.$on(EVENT_TYPE.SLOT, this.onSlotResized)
+
+    this.emitter = emitter
   },
 
   activated() {
