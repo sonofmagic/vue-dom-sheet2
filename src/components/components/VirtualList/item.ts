@@ -2,48 +2,10 @@
  * item and slot component both use similar wrapper
  * we need to know their size change at any time
  */
-// @ts-nocheck
-import { defineComponent } from 'vue-demi'
-import { ItemProps, SlotProps } from './props'
 
-const Wrapper = {
-  created() {
-    this.shapeKey = this.horizontal ? 'offsetWidth' : 'offsetHeight'
-  },
-
-  mounted() {
-    if (typeof ResizeObserver !== 'undefined') {
-      this.resizeObserver = new ResizeObserver(() => {
-        this.dispatchSizeChange()
-      })
-      this.resizeObserver.observe(this.$el)
-    }
-  },
-
-  // since componet will be reused, so disptach when updated
-  updated() {
-    this.dispatchSizeChange()
-  },
-
-  beforeDestroy() {
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect()
-      this.resizeObserver = null
-    }
-  },
-
-  methods: {
-    getCurrentSize() {
-      return this.$el ? this.$el[this.shapeKey] : 0
-    },
-
-    // tell parent current size identify by unqiue key
-    dispatchSizeChange() {
-      this.$parent.emitter.emit(this.event, this.uniqueKey, this.getCurrentSize(), this.hasInitial)
-    },
-  },
-}
-
+import { defineComponent, h } from 'vue-demi'
+import { ItemProps } from './props'
+import { Wrapper } from './mixin'
 // wrapping for item
 export const Item = defineComponent({
   name: 'VirtualListItem',
@@ -51,7 +13,7 @@ export const Item = defineComponent({
 
   props: ItemProps,
 
-  render(h) {
+  render() {
     const { tag, component, extraProps = {}, index, source, scopedSlots = {}, uniqueKey, slotComponent } = this
 
     const props = {
@@ -80,25 +42,3 @@ export const Item = defineComponent({
   },
 })
 
-// wrapping for slot
-export const Slot = defineComponent({
-  name: 'VirtualListSlot',
-  mixins: [Wrapper],
-
-  props: SlotProps,
-
-  render(h) {
-    const { tag, uniqueKey } = this
-
-    return h(
-      tag,
-      {
-        key: uniqueKey,
-        attrs: {
-          role: uniqueKey,
-        },
-      },
-      this.$slots.default,
-    )
-  },
-})
