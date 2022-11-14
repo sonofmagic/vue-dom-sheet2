@@ -18,6 +18,10 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
+  (e: 'scrolltobottom'): void
+  (e: 'scrolltoright'): void
+  (e: 'scrolltotop'): void
+  (e: 'scrolltoleft'): void
 }>()
 const { columns, dataSource, itemComponent, itemScopedSlots } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
@@ -287,13 +291,27 @@ function resetDataSetSelected() {
 function onContainerScroll(payload: UIEvent) {
   // @ts-expect-error
   // console.log(payload.target.scrollLeft, payload.target.scrollTop)
+  const target = payload.target
+  if (target) {
+    emit('scroll', {
+      // @ts-expect-error
+      scrollLeft: target.scrollLeft ?? 0,
+      // @ts-expect-error
+      scrollTop: target.scrollTop ?? 0,
+    })
 
-  emit('scroll', {
-    // @ts-expect-error
-    scrollLeft: payload.target?.scrollLeft ?? 0,
-    // @ts-expect-error
-    scrollTop: payload.target?.scrollTop ?? 0,
-  })
+    // console.log(target.scrollHeight,target.scrollWidth)
+     // @ts-expect-error
+    if(target.scrollHeight === target.scrollTop){
+      emit('scrolltobottom')
+    }
+     // @ts-expect-error
+    if(target.scrollWidth === target.scrollLeft){
+      emit('scrolltoright')
+    }
+  }
+
+
 }
 
 // function onDrag(e: DragEvent, attrs: ICellAttrs) {
@@ -368,31 +386,25 @@ provide(
 
 <template>
   <div v-scrollbar class="vue-dom-sheet-wrapper">
-    <VirtualList
-      ref="containerRef" v-scrollbar table
+    <VirtualList ref="containerRef" v-scrollbar table
       table-class="w-auto table-fixed border-collapse text-center bg-white" class="relative" data-key="key"
       :data-sources="dataSource" :data-component="itemComponent" :item-scoped-slots="itemScopedSlots"
-      @scroll="onContainerScroll"
-    >
+      @scroll="onContainerScroll">
       <template #thead>
         <thead class="sticky top-0 left-0 z-[1]">
           <tr>
-            <th
-              v-for="(t, i) in columns" :key="i"
+            <th v-for="(t, i) in columns" :key="i"
               class="p-0 h-[48px] text-center border border-[#EEF0F4] cursor-pointer bg-white"
-              @click.stop="selectColumn(i)"
-            >
+              @click.stop="selectColumn(i)">
               {{ t.title }}
             </th>
           </tr>
         </thead>
       </template>
       <template #colgroup>
-        <col
-          v-for="col in columns" :key="col.key" :style="{
-            'min-width': `${col.width}px`,
-          }" :width="col.width"
-        >
+        <col v-for="col in columns" :key="col.key" :style="{
+          'min-width': `${col.width}px`,
+        }" :width="col.width">
       </template>
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />
