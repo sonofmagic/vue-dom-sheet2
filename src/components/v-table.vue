@@ -1,37 +1,50 @@
+<!-- eslint-disable no-new -->
 <script lang="ts" setup>
-import { provide, reactive, ref, toRefs } from 'vue-demi'
+import { onMounted, provide, reactive, ref, shallowRef, toRefs } from 'vue-demi'
 import { cloneDeep, forEach, throttle } from 'lodash-es'
-import { useWindowScroll } from '@vueuse/core'
+import { unrefElement, useWindowScroll } from '@vueuse/core'
+import PerfectScrollbar from 'perfect-scrollbar'
 import { ContextMenu, Popover, Selection, VirtualList, useContextMenu, usePopover, useSelection } from './components'
-
 import { useContainer, useKeyBoard } from './hooks'
 import { getBoundingClientRect, getDirection } from './utils'
 import type { ICellAttrs, IColumn, IDataSourceItem, IDataSourceRow, IScrollOffset } from './types'
 import { CellEventsSymbol } from './contexts/CellEvents'
-import { vScrollbar } from './directives'
+// import { vScrollbar } from './directives'
 import 'perfect-scrollbar/css/perfect-scrollbar.css'
 const props = defineProps<{
   dataSource: IDataSourceRow[]
   columns: IColumn[]
   itemComponent: Function
   itemScopedSlots?: Record<string, unknown>
+  onScrollToBottom?: ({ xAxisScrollbar, yAxisScrollbar }: { xAxisScrollbar: PerfectScrollbar; yAxisScrollbar: PerfectScrollbar }) => Promise<unknown> | unknown
 }>()
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
-  (e: 'scrolltobottom'): void
-  (e: 'scrolltoright'): void
-  (e: 'scrolltotop'): void
-  (e: 'scrolltoleft'): void
+  // (e: 'scrolltobottom'): void
+  // (e: 'scrolltoright'): void
+  // (e: 'scrolltotop'): void
+  // (e: 'scrolltoleft'): void
 }>()
-const { columns, dataSource, itemComponent, itemScopedSlots } = toRefs(props)
+const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
 const { x: windowX, y: windowY } = useWindowScroll()
 const { shiftState, controlState } = useKeyBoard()
 
 const { context: menuContext } = useContextMenu()
-const containerRef = ref<HTMLDivElement>()
+const containerRef = shallowRef<Element>()
+const wrapperRef = shallowRef<Element>()
+const yAxisScrollbar = shallowRef<PerfectScrollbar>()
+const xAxisScrollbar = shallowRef<PerfectScrollbar>()
 const { left: containerLeft, top: containerTop, scrollX: containerScrollX, scrollY: containerScrollY } = useContainer(containerRef)
+onMounted(() => {
+  // console.log(containerRef.value, wrapperRef.value)
+  // 上下滚
+  yAxisScrollbar.value = new PerfectScrollbar(unrefElement(containerRef.value) as Element)
+  // 左右滚
+  xAxisScrollbar.value = new PerfectScrollbar(unrefElement(wrapperRef.value) as Element)
+})
+const scrollToBottomLoading = ref(false)
 
 const {
   resetSelectionPosition,
@@ -288,7 +301,7 @@ function resetDataSetSelected() {
   selectedCellSet.value.clear()
 }
 
-function onContainerScroll(payload: UIEvent) {
+async function onContainerScroll(payload: UIEvent) {
   // @ts-expect-error
   // console.log(payload.target.scrollLeft, payload.target.scrollTop)
   const target = payload.target
@@ -300,18 +313,34 @@ function onContainerScroll(payload: UIEvent) {
       scrollTop: target.scrollTop ?? 0,
     })
 
-    // console.log(target.scrollHeight,target.scrollWidth)
-     // @ts-expect-error
-    if(target.scrollHeight === target.scrollTop){
-      emit('scrolltobottom')
+    // console.log(target.scrollHeight, target.scrollWidth)
+    // console.log(target.scrollTop, target.scrollLeft)
+    // @ts-expect-error
+
+    let shouldTrigger = false
+
+    // be aware of difference between clientHeight & offsetHeight & window.getComputedStyle().height
+    const scrollBottom = target.scrollTop + target.clientHeight
+    shouldTrigger = target.scrollHeight - scrollBottom <= 0
+    // console.log(target.scrollTop, target.clientHeight, target.scrollHeight)
+    if (shouldTrigger && !scrollToBottomLoading.value) {
+      try {
+        scrollToBottomLoading.value = true
+        await onScrollToBottom?.value?.({
+          xAxisScrollbar: xAxisScrollbar.value,
+          yAxisScrollbar: yAxisScrollbar.value,
+        })
+        // emit('scrolltobottom')
+      }
+      finally {
+        scrollToBottomLoading.value = false
+      }
     }
-     // @ts-expect-error
-    if(target.scrollWidth === target.scrollLeft){
-      emit('scrolltoright')
-    }
+
+    // @ts-expect-error
+    // if (target.scrollWidth === target.scrollLeft)
+    //   emit('scrolltoright')
   }
-
-
 }
 
 // function onDrag(e: DragEvent, attrs: ICellAttrs) {
@@ -385,26 +414,31 @@ provide(
 </script>
 
 <template>
-  <div v-scrollbar class="vue-dom-sheet-wrapper">
-    <VirtualList ref="containerRef" v-scrollbar table
-      table-class="w-auto table-fixed border-collapse text-center bg-white" class="relative" data-key="key"
-      :data-sources="dataSource" :data-component="itemComponent" :item-scoped-slots="itemScopedSlots"
-      @scroll="onContainerScroll">
+  <div ref="wrapperRef" class="vue-dom-sheet-wrapper">
+    <VirtualList
+      ref="containerRef" table table-class="w-auto table-fixed border-collapse text-center bg-white"
+      class="relative" data-key="key" :data-sources="dataSource" :data-component="itemComponent"
+      :item-scoped-slots="itemScopedSlots" @scroll.passive="onContainerScroll"
+    >
       <template #thead>
         <thead class="sticky top-0 left-0 z-[1]">
           <tr>
-            <th v-for="(t, i) in columns" :key="i"
+            <th
+              v-for="(t, i) in columns" :key="i"
               class="p-0 h-[48px] text-center border border-[#EEF0F4] cursor-pointer bg-white"
-              @click.stop="selectColumn(i)">
+              @click.stop="selectColumn(i)"
+            >
               {{ t.title }}
             </th>
           </tr>
         </thead>
       </template>
       <template #colgroup>
-        <col v-for="col in columns" :key="col.key" :style="{
-          'min-width': `${col.width}px`,
-        }" :width="col.width">
+        <col
+          v-for="col in columns" :key="col.key" :style="{
+            'min-width': `${col.width}px`,
+          }" :width="col.width"
+        >
       </template>
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />

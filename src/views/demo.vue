@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { h, ref } from 'vue-demi'
+import { h, nextTick, ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
 import dayjs from 'dayjs'
 // @ts-expect-error
@@ -9,12 +9,19 @@ import yAxisItem from './yAxisItem.vue'
 import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentProps, VSheetType } from '@/components/exports'
 import { Sheet, SheetCell, VirtualList, useDataSource, vScrollbar } from '@/components/exports'
 const sheetRef = ref<VSheetType>()
+const page = ref(0)
 const { columns, dataSource, rows } = useDataSource(async () => {
   const { data } = await import('./mock.json')
 
   const columns = []
   const rows = []
-  for (let i = 0; i < 50; i++) {
+  // rows.push(...cloneDeep(data.map((x, j) => {
+  //   return {
+  //     ...x,
+  //     personId: x.personId + j,
+  //   }
+  // })))
+  for (let i = 0; i < 2; i++) {
     rows.push(...cloneDeep(data.map((x, j) => {
       return {
         ...x,
@@ -123,6 +130,31 @@ const itemScopedSlots = {
     })
   },
 }
+
+function wait(ts = 1000) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(ts)
+    }, ts)
+  })
+}
+
+async function onScroll2Bottom({ yAxisScrollbar }) {
+  // console.log(yAxisScrollbar)
+  await wait()
+  dataSource.value.push(...cloneDeep(dataSource.value.slice(0, 20).map((x, idx) => {
+    return {
+      ...x,
+      key: x.key + page.value + idx,
+    }
+  })))
+  nextTick(() => {
+    yAxisScrollbar?.update()
+  })
+
+  page.value++
+  console.log('fetchNewRows')
+}
 </script>
 
 <template>
@@ -141,10 +173,7 @@ const itemScopedSlots = {
             <div class="table-row-group">
               <div v-for="(row, idx) in dataSource" :key="row.key" class="h-[48px] border table-row">
                 <div class="table-cell p-2">
-                  <Checkbox
-                    :true-label="true" :false-label="false"
-                    @change="(v) => sheetRef?.selectRow(idx, v)"
-                  />
+                  <Checkbox :true-label="true" :false-label="false" @change="(v) => sheetRef?.selectRow(idx, v)" />
                   选中第{{ idx + 1 }}行
                 </div>
               </div>
@@ -172,7 +201,7 @@ const itemScopedSlots = {
       <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
       <Sheet
         ref="sheetRef" :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource"
-        :item-component="SheetCell" @scroll="syncScroll"
+        :item-component="SheetCell" :on-scroll-to-bottom="onScroll2Bottom" @scroll="syncScroll"
       >
         <template #context-menu="ctx">
           <div class="w-32 text-center">
