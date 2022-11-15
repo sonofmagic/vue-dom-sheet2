@@ -17,6 +17,7 @@ export interface IDataSourceItem<T = unknown> {
 export interface IDataSourceRow<T = unknown> {
   key: string
   cells: IDataSourceItem<T>[]
+  row: T
 }
 
 export interface ICellAttrs {

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { h, nextTick, ref } from 'vue-demi'
+import { h, nextTick, onBeforeMount, ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
 import dayjs from 'dayjs'
 // @ts-expect-error
@@ -10,25 +10,8 @@ import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentPr
 import { Sheet, SheetCell, VirtualList, useDataSource, vScrollbar } from '@/components/exports'
 const sheetRef = ref<VSheetType>()
 const page = ref(0)
-const { columns, dataSource, rows } = useDataSource(async () => {
-  const { data } = await import('./mock.json')
-
+const { columns, dataSource, transform } = useDataSource(() => {
   const columns = []
-  const rows = []
-  // rows.push(...cloneDeep(data.map((x, j) => {
-  //   return {
-  //     ...x,
-  //     personId: x.personId + j,
-  //   }
-  // })))
-  for (let i = 0; i < 2; i++) {
-    rows.push(...cloneDeep(data.map((x, j) => {
-      return {
-        ...x,
-        personId: x.personId + i + j,
-      }
-    })))
-  }
 
   const columnsLength = 30
   const firstDay = dayjs().startOf('M')
@@ -42,12 +25,26 @@ const { columns, dataSource, rows } = useDataSource(async () => {
 
   return {
     columns,
-    rows,
+    // rows,
     // childrenKey: 'shiftId',
     rowKey: 'personId',
     children: 'shiftList',
   }
 })
+
+onBeforeMount(async () => {
+  const { data } = await import('./mock.json')
+
+  for (let i = 0; i < 2; i++) {
+    dataSource.value.push(...transform(data.map((x, j) => {
+      return {
+        ...x,
+        personId: x.personId + i + j,
+      }
+    })))
+  }
+})
+
 const dom = ref<HTMLDivElement>()
 const syncScroll = ({ scrollLeft, scrollTop }: IScrollOffset) => {
   if (dom.value) {

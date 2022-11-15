@@ -416,16 +416,15 @@ provide(
 <template>
   <div ref="wrapperRef" class="vue-dom-sheet-wrapper">
     <VirtualList
-      ref="containerRef" table table-class="w-auto table-fixed border-collapse text-center bg-white"
-      class="relative" data-key="key" :data-sources="dataSource" :data-component="itemComponent"
-      :item-scoped-slots="itemScopedSlots" @scroll.passive="onContainerScroll"
+      ref="containerRef" table table-class="vue-dom-sheet-virtual-table" class="vue-dom-sheet-virtual-list"
+      data-key="key" :data-sources="dataSource" :data-component="itemComponent" :item-scoped-slots="itemScopedSlots"
+      @scroll.passive="onContainerScroll"
     >
       <template #thead>
-        <thead class="sticky top-0 left-0 z-[1]">
+        <thead class="vue-dom-sheet-virtual-table-head">
           <tr>
             <th
-              v-for="(t, i) in columns" :key="i"
-              class="p-0 h-[48px] text-center border border-[#EEF0F4] cursor-pointer bg-white"
+              v-for="(t, i) in columns" :key="i" class="vue-dom-sheet-virtual-table-head-cell"
               @click.stop="selectColumn(i)"
             >
               {{ t.title }}
@@ -465,9 +464,21 @@ provide(
     z-index: 2;
   }
 
-  // .ps__thumb-x,
-  // .ps__thumb-y {
-  //   z-index: 2;
-  // }
+  .vue-dom-sheet-virtual-table {
+    @apply w-auto table-fixed border-collapse text-center bg-white;
+
+    .vue-dom-sheet-virtual-table-head {
+      @apply sticky top-0 left-0 z-[1];
+
+      .vue-dom-sheet-virtual-table-head-cell {
+        @apply p-0 h-[48px] text-center border border-[#EEF0F4] cursor-pointer bg-white;
+      }
+    }
+  }
+
+  .vue-dom-sheet-virtual-list {
+    @apply relative;
+  }
+
 }
 </style>
