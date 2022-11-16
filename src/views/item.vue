@@ -30,6 +30,11 @@ const { colIndex, rowIndex, item, source } = toRefs(props)
       {{ item.locked ? '锁' : '' }}
     </div>
   </div>
+  <div v-else-if="item.locked">
+    <div class="text-xs flex items-center pr-1.5">
+      {{ item.locked ? '锁' : '' }}
+    </div>
+  </div>
 </template>
 
 <style scoped>

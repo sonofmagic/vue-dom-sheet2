@@ -11,6 +11,8 @@ export interface IDataSourceItem<T = unknown> {
   disabled: boolean
   editing: boolean
   locked: boolean
+  x: number
+  y: number
   // note?: string
 }
 

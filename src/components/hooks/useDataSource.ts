@@ -1,5 +1,5 @@
-import { ref } from 'vue-demi'
-
+import { ref, watch } from 'vue-demi'
+import type { Ref } from 'vue-demi'
 import type { IDataSourceItem, IDataSourceRow } from '../types'
 
 interface IColumn {
@@ -18,13 +18,13 @@ interface IWrapDataResponse {
   // rows: IRow[]
   childKey?: string
   rowKey?: string
-  children: string
+  children?: string
 }
 
-function noop() { }
+function noop(x: unknown) { return x }
 
-function createTransformMethod(res: IWrapDataResponse) {
-  const { childKey, children, columns, rowKey } = res
+function createTransformMethod(res: IWrapDataResponse, dataSourceRef: Ref<IDataSourceRow<unknown>[]>) {
+  const { childKey, children = 'children', columns, rowKey } = res
 
   return function transform(rows: IRow[]) {
     const columnsLength = columns.length
@@ -34,10 +34,10 @@ function createTransformMethod(res: IWrapDataResponse) {
       const tr = []
       for (let j = 0; j < columnsLength; j++) {
         const value = row[children][j]
-        // 这个默认在所有的 cell 里，不是唯一的
-        // 因为有可能数据是懒加载获取的，每次用户滚动到底部才重新获取
-        // 所以这个id，其中的 i ，是远程 fetch 到数据的 index, 每次是从0开始的!
-        let id = `${i}-${j}`
+        const y = i + dataSourceRef.value.length
+        const x = j
+        let id = `${y}-${x}`
+        // console.log(i, dataSourceRef.value.length)
         if (childKey && value)
           id = value[childKey]
 
@@ -49,6 +49,8 @@ function createTransformMethod(res: IWrapDataResponse) {
           disabled: false,
           editing: false,
           locked: false,
+          x,
+          y,
         }
         tr.push(td)
       }
@@ -68,11 +70,19 @@ export default function useDataSource(fn: (...args: any[]) => IWrapDataResponse)
   const columns = ref<IColumn[]>([])
   // const rows = ref<IRow[]>([])
   let transform: ReturnType<typeof createTransformMethod> | typeof noop = noop
+  let config: IWrapDataResponse | undefined
   if (fn) {
-    const res = fn()
-    transform = createTransformMethod(res)
-    columns.value = res.columns
+    config = fn()
+    transform = createTransformMethod(config, dataSource)
+    columns.value = config.columns
   }
+
+  watch(columns, (nv) => {
+    transform = createTransformMethod({
+      ...config,
+      columns: nv,
+    }, dataSource)
+  })
 
   return {
     columns,

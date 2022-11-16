@@ -31,10 +31,10 @@ const { columns, dataSource, transform } = useDataSource(() => {
     children: 'shiftList',
   }
 })
-
+let mockData
 onBeforeMount(async () => {
   const { data } = await import('./mock.json')
-
+  mockData = data
   for (let i = 0; i < 2; i++) {
     dataSource.value.push(...transform(data.map((x, j) => {
       return {
@@ -69,8 +69,7 @@ const closeContextMenu = ({ menuContext }: ContextMenuSlotContext) => {
 
 function doLock({ menuContext, selectedCellSet }: ContextMenuSlotContext) {
   selectedCellSet?.forEach((x) => {
-    if (x.value)
-      x.locked = true
+    x.locked = true
   })
   menuContext.close()
 }
@@ -139,18 +138,34 @@ function wait(ts = 1000) {
 async function onScroll2Bottom({ yAxisScrollbar }) {
   // console.log(yAxisScrollbar)
   await wait()
-  dataSource.value.push(...cloneDeep(dataSource.value.slice(0, 20).map((x, idx) => {
+  // console.log(mockData)
+  dataSource.value.push(...transform(cloneDeep(mockData.map((x, j) => {
     return {
       ...x,
-      key: x.key + page.value + idx,
+      personId: x.personId + j + Math.random(),
     }
-  })))
+  }))))
   nextTick(() => {
     yAxisScrollbar?.update()
   })
 
   page.value++
   console.log('fetchNewRows')
+}
+
+function resetColumns() {
+  const _columns = []
+
+  const columnsLength = 10
+  const firstDay = dayjs('2022-06-01').startOf('M')
+  for (let i = 0; i < columnsLength; i++) {
+    _columns.push({
+      width: 120,
+      title: firstDay.add(i, 'day').format('YYYY-MM-DD'),
+      key: i,
+    })
+  }
+  columns.value = _columns
 }
 </script>
 
@@ -260,6 +275,9 @@ async function onScroll2Bottom({ yAxisScrollbar }) {
               </div>
               <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx)">
                 clear
+              </div>
+              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="resetColumns(ctx)">
+                reset columns
               </div>
             </div>
           </div>
