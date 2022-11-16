@@ -1,12 +1,13 @@
 /**
  * virtual list default component
  */
-// @ts-nocheck
-import { defineComponent } from 'vue-demi'
-import Virtual from './virtual'
-import { Item, Slot } from './item'
-import { VirtualProps } from './props'
 
+import { defineComponent, h } from 'vue-demi'
+import mitt from 'mitt'
+import Virtual from './virtual'
+import { Item } from './item'
+import { Slot } from './slot'
+import { VirtualProps } from './props'
 const EVENT_TYPE = {
   ITEM: 'item_resize',
   SLOT: 'slot_resize',
@@ -52,13 +53,16 @@ const VirtualList = defineComponent({
     this.directionKey = this.isHorizontal ? 'scrollLeft' : 'scrollTop'
 
     this.installVirtual()
-
+    const emitter = mitt()
     // listen item size change
-    this.$on(EVENT_TYPE.ITEM, this.onItemResized)
-
+    // this.$on(EVENT_TYPE.ITEM, this.onItemResized)
+    emitter.on(EVENT_TYPE.ITEM, this.onItemResized)
     // listen slot size change
     if (this.$slots.header || this.$slots.footer)
-      this.$on(EVENT_TYPE.SLOT, this.onSlotResized)
+      emitter.on(EVENT_TYPE.SLOT, this.onSlotResized)
+    // this.$on(EVENT_TYPE.SLOT, this.onSlotResized)
+
+    this.emitter = emitter
   },
 
   activated() {
@@ -323,7 +327,7 @@ const VirtualList = defineComponent({
 
   // render function, a closer-to-the-compiler alternative to templates
   // https://vuejs.org/v2/guide/render-function.html#The-Data-Object-In-Depth
-  render(h) {
+  render() {
     const { header, footer, colgroup, append, thead, tfoot } = this.$slots
     const { padFront, padBehind } = this.range
     const { isHorizontal, pageMode, rootTag, wrapTag, wrapClass, wrapStyle, headerTag, headerClass, headerStyle, footerTag, footerClass, footerStyle, colgroupClass, colgroupStyle, tableClass, tableStyle, table } = this
