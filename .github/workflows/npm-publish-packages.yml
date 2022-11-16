@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'pnpm'
+          cache: "pnpm"
       - run: pnpm i
       - run: pnpm build
 
@@ -34,11 +34,11 @@ jobs:
       - uses: pnpm/action-setup@v2
         with:
           version: latest
-          cache: 'pnpm'
       - uses: actions/setup-node@v3
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
+          cache: "pnpm"
       - run: pnpm i
       - run: pnpm build
       - run: pnpm publish
@@ -52,11 +52,11 @@ jobs:
       - uses: pnpm/action-setup@v2
         with:
           version: latest
-          cache: 'pnpm'
       - uses: actions/setup-node@v3
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
+          cache: "pnpm"
       - run: pnpm i
       - run: pnpm build
       - run: pnpm publish
