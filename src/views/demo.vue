@@ -7,7 +7,7 @@ import { cloneDeep } from 'lodash-es'
 import Item from './item.vue'
 import yAxisItem from './yAxisItem.vue'
 import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentProps, VSheetType } from '@/components/exports'
-import { Sheet, SheetCell, VirtualList, useDataSource, vScrollbar } from '@/components/exports'
+import { Popover, Sheet, SheetCell, VirtualList, useDataSource, usePopover, vScrollbar } from '@/components/exports'
 const sheetRef = ref<VSheetType>()
 const page = ref(0)
 const { columns, dataSource, transform } = useDataSource(() => {
@@ -44,7 +44,7 @@ onBeforeMount(async () => {
     })))
   }
 })
-
+const { context: subPopoverContext } = usePopover()
 const dom = ref<HTMLDivElement>()
 const syncScroll = ({ scrollLeft, scrollTop }: IScrollOffset) => {
   if (dom.value) {
@@ -135,6 +135,10 @@ function wait(ts = 1000) {
   })
 }
 
+function expandSubPopover(ctx: ContextMenuSlotContext, e: MouseEvent) {
+  console.log(ctx, e)
+}
+
 async function onScroll2Bottom({ yAxisScrollbar }) {
   // console.log(yAxisScrollbar)
   await wait()
@@ -153,7 +157,7 @@ async function onScroll2Bottom({ yAxisScrollbar }) {
   console.log('fetchNewRows')
 }
 
-function resetColumns() {
+function resetColumns(ctx: ContextMenuSlotContext) {
   const _columns = []
 
   const columnsLength = 10
@@ -253,10 +257,11 @@ function resetColumns() {
               </div>
               <div
                 class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                @click="closeContextMenu(ctx)"
+                @click="expandSubPopover(ctx, $event)"
               >
                 行/列复制
               </div>
+
               <div
                 class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
                 @click="closeContextMenu(ctx)"
@@ -279,6 +284,27 @@ function resetColumns() {
               <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="resetColumns(ctx)">
                 reset columns
               </div>
+              <Popover :context="subPopoverContext" placement="right-start">
+                <div class="w-32 text-center">
+                  <div class="w-32 text-center">
+                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doLock(ctx)">
+                      从上往下
+                    </div>
+                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="unlock(ctx)">
+                      从下往上
+                    </div>
+                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doNote(ctx)">
+                      从左往右
+                    </div>
+                    <div
+                      class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                      @click="setDisabled(ctx, true)"
+                    >
+                      从右往左
+                    </div>
+                  </div>
+                </div>
+              </Popover>
             </div>
           </div>
         </template>
@@ -319,6 +345,8 @@ function resetColumns() {
   </div>
 </template>
 
-<style scoped>
-
+<style lang="scss">
+.vue-dom-sheet-context-menu {
+  @apply border bg-white;
+}
 </style>
