@@ -1,6 +1,6 @@
 {
   "name": "vue-dom-sheet",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "files": [
     "dist"
   ],
@@ -65,6 +65,9 @@
     "vue-template-compiler": "^2.7.14",
     "vue-template-es2015-compiler": "^1.9.1",
     "vue3": "npm:vue@3"
+  },
+  "engines": {
+    "pnpm": ">=7.10.0"
   },
   "packageManager": "pnpm@7.16.0",
   "repository": {

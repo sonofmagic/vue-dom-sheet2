@@ -37,9 +37,13 @@ jobs:
           cache: "pnpm"
       - run: pnpm i
       - run: pnpm build
-      - run: pnpm publish
+      - name: Set publishing config
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "${NODE_AUTH_TOKEN}"
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - run: pnpm publish
+        # env:
+        #   NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
   publish-npm:
     needs: build
     runs-on: ubuntu-latest
