@@ -35,7 +35,6 @@ specifiers:
   vue3: npm:vue@3
 
 dependencies:
-  mitt: 3.0.0
   vue-demi: 0.13.11_xpaeqr4pwmwbonupufe3t5rnda
 
 devDependencies:
@@ -53,6 +52,7 @@ devDependencies:
   element-ui: 2.15.12_vue@2.7.14
   eslint: 8.27.0
   lodash-es: 4.17.21
+  mitt: 3.0.0
   perfect-scrollbar: 1.5.5
   postcss: 8.4.19
   rollup-plugin-visualizer: 5.8.3
@@ -2899,7 +2899,7 @@ packages:
 
   /mitt/3.0.0:
     resolution: {integrity: sha512-7dX2/10ITVyqh4aOSVI9gdape+t9l2/8QxHrFmUXu4EEUpdlxl6RudZUPZoc+zuY2hk1j7XxVroIVIan/pD/SQ==}
-    dev: false
+    dev: true
 
   /mlly/0.5.16:
     resolution: {integrity: sha512-LaJ8yuh4v0zEmge/g3c7jjFlhoCPfQn6RCjXgm9A0Qiuochq4BcuOxVfWmdnCoLTlg2MV+hqhOek+W2OhG0Lwg==}
