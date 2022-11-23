@@ -4,6 +4,7 @@ import { onMounted, provide, reactive, ref, shallowRef, toRefs } from 'vue-demi'
 import { cloneDeep, forEach, throttle } from 'lodash-es'
 import { unrefElement, useWindowScroll } from '@vueuse/core'
 import PerfectScrollbar from 'perfect-scrollbar'
+import type { IContextMenuContext } from './components'
 import { ContextMenu, Popover, Selection, VirtualList, useContextMenu, usePopover, useSelection } from './components'
 import { useContainer, useKeyBoard } from './hooks'
 import { getBoundingClientRect, getDirection } from './utils'
@@ -17,6 +18,7 @@ const props = defineProps<{
   itemComponent: Function
   itemScopedSlots?: Record<string, unknown>
   onScrollToBottom?: ({ xAxisScrollbar, yAxisScrollbar }: { xAxisScrollbar: PerfectScrollbar; yAxisScrollbar: PerfectScrollbar }) => Promise<unknown> | unknown
+  onContextMenu?: ({ selectedCellSet, menuContext }: { selectedCellSet: Set<IDataSourceItem<unknown>>; menuContext: IContextMenuContext }) => Record<string, any> | Boolean | Promise<Record<string, any> | Boolean>
 }>()
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
@@ -25,7 +27,7 @@ const emit = defineEmits<{
   // (e: 'scrolltotop'): void
   // (e: 'scrolltoleft'): void
 }>()
-const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom } = toRefs(props)
+const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
 const { x: windowX, y: windowY } = useWindowScroll()
@@ -72,9 +74,23 @@ const {
 const currentSelectionValues = ref<IDataSourceItem[]>()
 const startSelection = ref(false)
 const selectedCellSet = ref(new Set<IDataSourceItem>())
+const contextMenuAttrs = ref({})
 
-function onContextmenu(e: MouseEvent, attrs: ICellAttrs) {
+async function onContextmenu(e: MouseEvent, attrs: ICellAttrs) {
   e.preventDefault()
+
+  const res = await onContextMenuFromProp?.value?.({
+    selectedCellSet: selectedCellSet.value,
+    menuContext,
+  })
+  if (res === false)
+    return
+  if (typeof res === 'object')
+    contextMenuAttrs.value = res
+
+  // if (typeof res === 'undefined' || res === true) {
+
+  // }
   if (selectionContext.el) {
     const rect = getBoundingClientRect(selectionContext.el)
     menuContext.show({
@@ -442,7 +458,7 @@ provide(
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />
         <ContextMenu :context="menuContext">
-          <slot name="context-menu" :selected-cell-set="selectedCellSet" :menu-context="menuContext" />
+          <slot name="context-menu" :attrs="contextMenuAttrs" :selected-cell-set="selectedCellSet" :menu-context="menuContext" />
         </ContextMenu>
         <Popover :context="valueSelectorContext" placement="bottom-start">
           <slot name="value-selector" :attrs="dblclickCellAttrs" />

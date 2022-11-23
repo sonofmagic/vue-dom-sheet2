@@ -1,8 +1,8 @@
-import { reactive, ref } from 'vue-demi'
+import { ref } from 'vue-demi'
 
 import type { IPopoverContext } from './type'
 export function usePopover() {
-  const context: IPopoverContext = reactive({
+  const context: IPopoverContext = {
     show() {
       throw new Error('context is null')
     },
@@ -11,7 +11,7 @@ export function usePopover() {
     },
     el: undefined,
     visible: ref<boolean>(false),
-  })
+  }
   return {
     context,
   }

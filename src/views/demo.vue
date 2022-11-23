@@ -250,6 +250,17 @@ function doCopy({ selectedCellSet }: ContextMenuSlotContext, direction: 'left' |
 
   subPopoverContext.close()
 }
+
+function showLog(ctx: ContextMenuSlotContext) {
+  console.log(ctx)
+}
+
+function onContextMenu(ctx: ContextMenuSlotContext) {
+  console.log(ctx)
+  return {
+    a: 1,
+  }
+}
 </script>
 
 <template>
@@ -296,7 +307,8 @@ function doCopy({ selectedCellSet }: ContextMenuSlotContext, direction: 'left' |
       <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
       <Sheet
         ref="sheetRef" :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource"
-        :item-component="SheetCell" :on-scroll-to-bottom="onScroll2Bottom" @scroll="syncScroll"
+        :item-component="SheetCell" :on-scroll-to-bottom="onScroll2Bottom" :on-context-menu="onContextMenu"
+        @scroll="syncScroll"
       >
         <template #context-menu="ctx">
           <div class="border bg-white">
@@ -344,11 +356,12 @@ function doCopy({ selectedCellSet }: ContextMenuSlotContext, direction: 'left' |
 
                 <div
                   class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                  @click="closeContextMenu(ctx)"
+                  @click="showLog(ctx)"
                 >
                   复制上一区间
                 </div>
                 <div
+                  v-if="ctx.attrs.a"
                   class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, {
                     name: '测试数据',
                     startTime: '11:11',
@@ -358,10 +371,10 @@ function doCopy({ selectedCellSet }: ContextMenuSlotContext, direction: 'left' |
                 >
                   set value
                 </div>
-                <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx)">
+                <div v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx)">
                   clear
                 </div>
-                <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="resetColumns(ctx)">
+                <div v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="resetColumns(ctx)">
                   reset columns
                 </div>
                 <Popover :context="subPopoverContext" placement="right-start">
