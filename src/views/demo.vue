@@ -2,11 +2,11 @@
 import { h, nextTick, onBeforeMount, ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
 import dayjs from 'dayjs'
-// @ts-expect-error
-import { cloneDeep } from 'lodash-es'
+
+import { cloneDeep, groupBy } from 'lodash-es'
 import Item from './item.vue'
 import yAxisItem from './yAxisItem.vue'
-import type { ContextMenuSlotContext, ICellAttrs, IScrollOffset, ItemComponentProps, VSheetType } from '@/components/exports'
+import type { ContextMenuSlotContext, ICellAttrs, IDataSourceItem, IScrollOffset, ItemComponentProps, VSheetType } from '@/components/exports'
 import { Popover, Sheet, SheetCell, VirtualList, useDataSource, usePopover, vScrollbar } from '@/components/exports'
 const sheetRef = ref<VSheetType>()
 const page = ref(0)
@@ -135,8 +135,12 @@ function wait(ts = 1000) {
   })
 }
 
-function expandSubPopover(ctx: ContextMenuSlotContext, e: MouseEvent) {
-  console.log(ctx, e)
+function expandSubPopover(e: MouseEvent) {
+  // console.log(subPopoverContext, e)
+  // @ts-expect-error
+  const rect = e.target.getBoundingClientRect()
+
+  subPopoverContext.show(rect)
 }
 
 async function onScroll2Bottom({ yAxisScrollbar }) {
@@ -170,6 +174,81 @@ function resetColumns(ctx: ContextMenuSlotContext) {
     })
   }
   columns.value = _columns
+}
+
+function doCopy({ selectedCellSet }: ContextMenuSlotContext, direction: 'left' | 'right' | 'top' | 'bottom') {
+  if (direction === 'top') {
+    let maxY = -1
+    let x = -1
+    let t = null
+    selectedCellSet.forEach((item) => {
+      if (item.y > maxY) {
+        maxY = item.y
+        t = item
+        x = item.x
+      }
+    })
+    for (let i = 0; i < maxY; i++) {
+      if (t.value)
+        dataSource.value[i].cells[x].value = cloneDeep(t.value)
+    }
+
+    console.log(maxY, t)
+  }
+  else if (direction === 'bottom') {
+    let minY = Infinity
+    let x = -1
+    let t = null
+    selectedCellSet.forEach((item) => {
+      if (item.y < minY) {
+        minY = item.y
+        t = item
+        x = item.x
+      }
+    })
+    for (let i = minY + 1; i < dataSource.value.length; i++) {
+      if (t.value)
+        dataSource.value[i].cells[x].value = cloneDeep(t.value)
+    }
+
+    console.log(minY, t)
+  }
+  else if (direction === 'left') {
+    let maxX = -1
+    let y = -1
+    let t = null
+    selectedCellSet.forEach((item) => {
+      if (item.x > maxX) {
+        maxX = item.x
+        t = item
+        y = item.y
+      }
+    })
+    for (let i = 0; i < maxX; i++) {
+      if (t.value)
+        dataSource.value[y].cells[i].value = cloneDeep(t.value)
+    }
+
+    console.log(maxX, t)
+  }
+  else if (direction === 'right') {
+    let minX = Infinity
+    let y = -1
+    let t = null
+    selectedCellSet.forEach((item) => {
+      if (item.x < minX) {
+        minX = item.x
+        t = item
+        y = item.y
+      }
+    })
+    for (let i = minX + 1; i < dataSource.value[y].cells.length; i++) {
+      if (t.value)
+        dataSource.value[y].cells[i].value = cloneDeep(t.value)
+    }
+  }
+
+  subPopoverContext.close()
 }
 </script>
 
@@ -220,9 +299,10 @@ function resetColumns(ctx: ContextMenuSlotContext) {
         :item-component="SheetCell" :on-scroll-to-bottom="onScroll2Bottom" @scroll="syncScroll"
       >
         <template #context-menu="ctx">
-          <div class="w-32 text-center">
+          <div class="border bg-white">
             <div class="w-32 text-center">
-              <!-- <div
+              <div class="w-32 text-center">
+                <!-- <div
                 class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
                 @click="closeContextMenu(ctx)"
               >
@@ -234,77 +314,89 @@ function resetColumns(ctx: ContextMenuSlotContext) {
               >
                 粘贴
               </div> -->
-              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doLock(ctx)">
-                锁定
-              </div>
-              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="unlock(ctx)">
-                解锁
-              </div>
-              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doNote(ctx)">
-                备注
-              </div>
-              <div
-                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                @click="setDisabled(ctx, true)"
-              >
-                禁用
-              </div>
-              <div
-                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                @click="setDisabled(ctx, false)"
-              >
-                解禁
-              </div>
-              <div
-                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                @click="expandSubPopover(ctx, $event)"
-              >
-                行/列复制
-              </div>
+                <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doLock(ctx)">
+                  锁定
+                </div>
+                <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="unlock(ctx)">
+                  解锁
+                </div>
+                <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doNote(ctx)">
+                  备注
+                </div>
+                <div
+                  class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                  @click="setDisabled(ctx, true)"
+                >
+                  禁用
+                </div>
+                <div
+                  class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                  @click="setDisabled(ctx, false)"
+                >
+                  解禁
+                </div>
+                <div
+                  class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                  @click="expandSubPopover($event)"
+                >
+                  行/列复制
+                </div>
 
-              <div
-                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                @click="closeContextMenu(ctx)"
-              >
-                复制上一区间
-              </div>
-              <div
-                class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, {
-                  name: '测试数据',
-                  startTime: '11:11',
-                  endTime: '11:11',
-                  remark: '',
-                })"
-              >
-                set value
-              </div>
-              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx)">
-                clear
-              </div>
-              <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="resetColumns(ctx)">
-                reset columns
-              </div>
-              <Popover :context="subPopoverContext" placement="right-start">
-                <div class="w-32 text-center">
-                  <div class="w-32 text-center">
-                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doLock(ctx)">
-                      从上往下
-                    </div>
-                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="unlock(ctx)">
-                      从下往上
-                    </div>
-                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doNote(ctx)">
-                      从左往右
-                    </div>
-                    <div
-                      class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                      @click="setDisabled(ctx, true)"
-                    >
-                      从右往左
+                <div
+                  class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                  @click="closeContextMenu(ctx)"
+                >
+                  复制上一区间
+                </div>
+                <div
+                  class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, {
+                    name: '测试数据',
+                    startTime: '11:11',
+                    endTime: '11:11',
+                    remark: '',
+                  })"
+                >
+                  set value
+                </div>
+                <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx)">
+                  clear
+                </div>
+                <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="resetColumns(ctx)">
+                  reset columns
+                </div>
+                <Popover :context="subPopoverContext" placement="right-start">
+                  <div class="border bg-white">
+                    <div class="w-32 text-center">
+                      <div class="w-32 text-center">
+                        <div
+                          class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                          @click="doCopy(ctx, 'top')"
+                        >
+                          从上往下
+                        </div>
+                        <div
+                          class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                          @click="doCopy(ctx, 'bottom')"
+                        >
+                          从下往上
+                        </div>
+                        <div
+                          class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                          @click="doCopy(ctx, 'left')"
+                        >
+                          从左往右
+                        </div>
+                        <div
+                          class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                          @click="doCopy(ctx, 'right')"
+                        >
+                          从右往左
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Popover>
+                </Popover>
+              </div>
             </div>
           </div>
         </template>
@@ -346,7 +438,5 @@ function resetColumns(ctx: ContextMenuSlotContext) {
 </template>
 
 <style lang="scss">
-.vue-dom-sheet-context-menu {
-  @apply border bg-white;
-}
+
 </style>

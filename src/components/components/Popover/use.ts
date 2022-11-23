@@ -1,4 +1,4 @@
-import { reactive } from 'vue-demi'
+import { reactive, ref } from 'vue-demi'
 
 import type { IPopoverContext } from './type'
 export function usePopover() {
@@ -10,6 +10,7 @@ export function usePopover() {
       throw new Error('context is null')
     },
     el: undefined,
+    visible: ref<boolean>(false),
   })
   return {
     context,

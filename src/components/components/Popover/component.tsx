@@ -79,6 +79,7 @@ export const Popover = defineComponent({
           context.value.el = dom.value
           context.value.show = show
           context.value.close = close
+          context.value.visible = visible
         }
       },
     )
