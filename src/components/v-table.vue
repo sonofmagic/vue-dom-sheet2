@@ -1,7 +1,8 @@
 <!-- eslint-disable no-new -->
 <script lang="ts" setup>
-import { onMounted, provide, reactive, ref, shallowRef, toRefs } from 'vue-demi'
+import { nextTick, onMounted, provide, reactive, ref, shallowRef, toRefs } from 'vue-demi'
 import { cloneDeep, forEach, throttle } from 'lodash-es'
+import type { MaybeElement } from '@vueuse/core'
 import { unrefElement, useWindowScroll } from '@vueuse/core'
 import PerfectScrollbar from 'perfect-scrollbar'
 import type { IContextMenuContext } from './components'
@@ -19,6 +20,7 @@ const props = defineProps<{
   itemScopedSlots?: Record<string, unknown>
   onScrollToBottom?: ({ xAxisScrollbar, yAxisScrollbar }: { xAxisScrollbar: PerfectScrollbar; yAxisScrollbar: PerfectScrollbar }) => Promise<unknown> | unknown
   onContextMenu?: ({ selectedCellSet, menuContext }: { selectedCellSet: Set<IDataSourceItem<unknown>>; menuContext: IContextMenuContext }) => Record<string, any> | Boolean | Promise<Record<string, any> | Boolean>
+  onValueSelector?: ({ attrs }: { attrs: ICellAttrs }) => Promise<boolean> | boolean
 }>()
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
@@ -27,24 +29,29 @@ const emit = defineEmits<{
   // (e: 'scrolltotop'): void
   // (e: 'scrolltoleft'): void
 }>()
-const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp } = toRefs(props)
+const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp, onValueSelector } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
 const { x: windowX, y: windowY } = useWindowScroll()
 const { shiftState, controlState } = useKeyBoard()
 
 const { context: menuContext } = useContextMenu()
-const containerRef = shallowRef<Element>()
-const wrapperRef = shallowRef<Element>()
+const containerRef = shallowRef<MaybeElement>()
+const wrapperRef = shallowRef<MaybeElement>()
 const yAxisScrollbar = shallowRef<PerfectScrollbar>()
 const xAxisScrollbar = shallowRef<PerfectScrollbar>()
 const { left: containerLeft, top: containerTop, scrollX: containerScrollX, scrollY: containerScrollY } = useContainer(containerRef)
 onMounted(() => {
   // console.log(containerRef.value, wrapperRef.value)
+  // nextTick(() => {
   // 上下滚
   yAxisScrollbar.value = new PerfectScrollbar(unrefElement(containerRef.value) as Element)
+
   // 左右滚
   xAxisScrollbar.value = new PerfectScrollbar(unrefElement(wrapperRef.value) as Element)
+  yAxisScrollbar.value.update()
+  xAxisScrollbar.value.update()
+  // })
 })
 const scrollToBottomLoading = ref(false)
 
@@ -155,6 +162,7 @@ function setMoveStyle(rect: DOMRect) {
   else {
     selectionReset('y')
   }
+  // @ts-expect-error
   console.log(offsetX, offsetY, getDirection([offsetX, offsetY]))
 }
 
@@ -251,19 +259,21 @@ function onMouseup(e: MouseEvent, attrs: ICellAttrs) {
 
 const dblclickCellAttrs = ref<ICellAttrs>()
 
-function onDblclick(e: MouseEvent, attrs: ICellAttrs) {
+async function onDblclick(e: MouseEvent, attrs: ICellAttrs) {
   // console.log('onDblclick', e)
   const target = getTdElement(e)
   if (target) {
     const rect = getBoundingClientRect(target)
-
-    valueSelectorContext.show({
-      x: rect.left,
-      y: rect.top,
-      width: rect.width,
-      height: rect.height,
-    })
-    dblclickCellAttrs.value = attrs
+    const result = await onValueSelector?.value?.({ attrs })
+    if (result === undefined || result) {
+      valueSelectorContext.show({
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height,
+      })
+      dblclickCellAttrs.value = attrs
+    }
   }
 }
 
@@ -318,8 +328,6 @@ function resetDataSetSelected() {
 }
 
 async function onContainerScroll(payload: UIEvent) {
-  // @ts-expect-error
-  // console.log(payload.target.scrollLeft, payload.target.scrollTop)
   const target = payload.target
   if (target) {
     emit('scroll', {
@@ -328,10 +336,6 @@ async function onContainerScroll(payload: UIEvent) {
       // @ts-expect-error
       scrollTop: target.scrollTop ?? 0,
     })
-
-    // console.log(target.scrollHeight, target.scrollWidth)
-    // console.log(target.scrollTop, target.scrollLeft)
-    // @ts-expect-error
 
     let shouldTrigger = false
 
@@ -343,8 +347,8 @@ async function onContainerScroll(payload: UIEvent) {
       try {
         scrollToBottomLoading.value = true
         await onScrollToBottom?.value?.({
-          xAxisScrollbar: xAxisScrollbar.value,
-          yAxisScrollbar: yAxisScrollbar.value,
+          xAxisScrollbar: xAxisScrollbar.value!,
+          yAxisScrollbar: yAxisScrollbar.value!,
         })
         // emit('scrolltobottom')
       }
