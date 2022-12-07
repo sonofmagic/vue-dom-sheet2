@@ -311,7 +311,8 @@ function onMouseenter(e: MouseEvent, attrs: ICellAttrs) {
 }
 
 function onMouseleave(e: MouseEvent, attrs: ICellAttrs) {
-  // console.log('onMouseleave',e)
+  // console.log('onMouseleave', e)
+  showDetailContext.close()
   // const target = getTdElement(e)
   // if(target){
   //   showDetailContext.close()
