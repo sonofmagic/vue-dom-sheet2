@@ -261,6 +261,11 @@ function onContextMenu(ctx: ContextMenuSlotContext) {
     a: 1,
   }
 }
+
+function onValueSelector({ attrs }) {
+  console.log(attrs)
+  return true
+}
 </script>
 
 <template>
@@ -308,7 +313,7 @@ function onContextMenu(ctx: ContextMenuSlotContext) {
       <Sheet
         ref="sheetRef" :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource"
         :item-component="SheetCell" :on-scroll-to-bottom="onScroll2Bottom" :on-context-menu="onContextMenu"
-        @scroll="syncScroll"
+        :on-value-selector="onValueSelector" @scroll="syncScroll"
       >
         <template #context-menu="ctx">
           <div class="border bg-white">
