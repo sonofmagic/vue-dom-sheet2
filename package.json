@@ -16,7 +16,8 @@
     "lint:fix": "eslint \"**/*.{vue,ts,js}\" --fix",
     "build2": "vue-demi-switch 2 && vite build",
     "build3": "vue-demi-switch 3 vue3 && vite build",
-    "vue:fix": "vue-demi-fix"
+    "vue:fix": "vue-demi-fix",
+    "sync": "open-cli https://npmmirror.com/sync/vue-dom-sheet"
   },
   "dependencies": {
     "vue-demi": "latest"
@@ -50,6 +51,7 @@
     "eslint": "^8.28.0",
     "lodash-es": "^4.17.21",
     "mitt": "^3.0.0",
+    "open-cli": "^7.1.0",
     "perfect-scrollbar": "^1.5.5",
     "postcss": "^8.4.19",
     "rollup-plugin-visualizer": "^5.8.3",
