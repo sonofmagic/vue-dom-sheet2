@@ -88,10 +88,10 @@ const { index: rowIndex, source } = toRefs(props)
   &.selected::before {
     position: absolute;
     content: '';
-    left: 1px;
-    right: 1px;
-    top: 1px;
-    bottom: 1px;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
     background-color: rgb(17 24 39 / 0.1);
   }
 
