@@ -93,6 +93,7 @@ const { index: rowIndex, source } = toRefs(props)
     top: 0px;
     bottom: 0px;
     background-color: rgb(17 24 39 / 0.1);
+    pointer-events: none;
   }
 
   &.disabled::before {
