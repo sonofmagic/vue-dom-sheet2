@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
 import NotFound from '@/views/NotFound.vue'
 import ScrollDemo from '@/views/ScrollDemo.vue'
+import Float from '@/views/Float.vue'
 Vue.use(VueRouter)
 
 export const routes: RouteConfig[] = [
@@ -15,6 +16,11 @@ export const routes: RouteConfig[] = [
     component: Home,
     // NOTE: you can also lazy-load the component
     // component: () => import("@/views/About.vue")
+  },
+  {
+    path: '/float',
+    name: 'Float',
+    component: Float,
   },
   {
     path: '/scroll',

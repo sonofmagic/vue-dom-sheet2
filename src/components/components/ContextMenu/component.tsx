@@ -7,6 +7,7 @@ import type { IPosition } from '../../types'
 import type { IContextMenuContext } from './type'
 import { IContextMenuProps } from './type'
 import './component.scss'
+const fixedTableHeaderHeight = 48
 export const ContextMenu = defineComponent({
   name: 'ContextMenu',
   props: {
@@ -44,18 +45,20 @@ export const ContextMenu = defineComponent({
         },
       }
       if (menuRef.value) {
-        const rect = menuRef.value.getBoundingClientRect()
+        // const rect = menuRef.value.getBoundingClientRect()
         // console.log(rect)
         computePosition(virtualEl, menuRef.value, {
           placement: 'right',
           middleware: [
             offset({
               mainAxis: 10,
-              alignmentAxis: -rect.height / 2,
+              // alignmentAxis: -rect.height / 2,
             }),
             // flip(),
             autoPlacement(),
-            shift(),
+            shift({
+              padding: fixedTableHeaderHeight,
+            }),
           ],
         }).then(({ x, y }) => {
           Object.assign(menuRef.value!.style, {
