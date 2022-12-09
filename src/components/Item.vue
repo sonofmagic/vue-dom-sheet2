@@ -83,8 +83,10 @@ const { index: rowIndex, source } = toRefs(props)
 
 <style lang="scss">
 .vue-dom-sheet-cell {
-  @apply p-0 border border-[#EEF0F4] h-[48px] cursor-default select-none relative;
-
+  --color-sheet-cell-border: #EEF0F4;
+  --color-sheet-cell-selected-bg:rgb(17 24 39 / 0.1);
+  @apply p-0 border h-[48px] cursor-default select-none relative;
+  border-color: var(--color-sheet-cell-border);
   &.selected::before {
     position: absolute;
     content: '';

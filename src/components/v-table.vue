@@ -463,7 +463,10 @@ provide(
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />
         <ContextMenu :context="menuContext">
-          <slot name="context-menu" :attrs="contextMenuAttrs" :selected-cell-set="selectedCellSet" :menu-context="menuContext" />
+          <slot
+            name="context-menu" :attrs="contextMenuAttrs" :selected-cell-set="selectedCellSet"
+            :menu-context="menuContext"
+          />
         </ContextMenu>
         <Popover :context="valueSelectorContext" placement="bottom-start">
           <slot name="value-selector" :attrs="dblclickCellAttrs" />
@@ -478,6 +481,7 @@ provide(
 
 <style lang="scss">
 .vue-dom-sheet-wrapper {
+  --color-virtual-table-head-cell-border: #EEF0F4;
   @apply relative flex;
 
   .ps__rail-x,
@@ -492,7 +496,8 @@ provide(
       @apply sticky top-0 left-0 z-[1];
 
       .vue-dom-sheet-virtual-table-head-cell {
-        @apply p-0 h-[48px] text-center border border-[#EEF0F4] cursor-pointer bg-white;
+        @apply p-0 h-[48px] text-center border cursor-pointer bg-white;
+        border-color: var(--color-virtual-table-head-cell-border);
       }
     }
   }
