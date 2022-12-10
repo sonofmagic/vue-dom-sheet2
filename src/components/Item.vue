@@ -84,32 +84,37 @@ const { index: rowIndex, source } = toRefs(props)
 <style lang="scss">
 .vue-dom-sheet-cell {
   --color-sheet-cell-border: #EEF0F4;
-  --color-sheet-cell-selected-bg:rgb(17 24 39 / 0.1);
+
   @apply p-0 border h-[48px] cursor-default select-none relative;
   border-color: var(--color-sheet-cell-border);
+
   &.selected::before {
+    --color-sheet-cell-selected-bg: rgb(17 24 39 / 0.1);
     position: absolute;
     content: '';
     left: 0px;
     right: 0px;
     top: 0px;
     bottom: 0px;
-    background-color: rgb(17 24 39 / 0.1);
+    background-color: var(--color-sheet-cell-selected-bg);
     pointer-events: none;
   }
 
   &.disabled::before {
+    --color-sheet-cell-disabled-bg: rgba(192, 196, 204, 0.10);
     position: absolute;
     content: '';
     left: 0px;
     right: 0px;
     top: 0px;
     bottom: 0px;
-    background-color: rgba(192, 196, 204, 0.10);
+    background-color: var(--color-sheet-cell-disabled-bg);
     cursor: not-allowed;
+    // pointer-events: none;
   }
 
   .has-note::after {
+    --color-sheet-cell-has-note-bg: #3380ff;
     // background-color: #3380FF;
     content: '';
     position: absolute;
@@ -117,7 +122,7 @@ const { index: rowIndex, source } = toRefs(props)
     top: 0;
     height: 0;
     width: 0;
-    border-top: 11px solid #3380ff;
+    border-top: 11px solid var(--color-sheet-cell-has-note-bg);
     border-left: 13px solid transparent;
   }
 

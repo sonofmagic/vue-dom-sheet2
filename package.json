@@ -1,6 +1,6 @@
 {
   "name": "vue-dom-sheet",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "files": [
     "dist"
   ],
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.33.1",
-    "@floating-ui/dom": "^1.0.8",
+    "@floating-ui/dom": "^1.0.9",
     "@types/lodash-es": "^4.17.6",
     "@vitejs/plugin-vue2": "^2.1.0",
     "@vitejs/plugin-vue2-jsx": "^1.0.3",
@@ -55,9 +55,9 @@
     "perfect-scrollbar": "^1.5.5",
     "postcss": "^8.4.19",
     "rollup-plugin-visualizer": "^5.8.3",
-    "sass": "^1.56.1",
+    "sass": "^1.56.2",
     "tailwindcss": "^3.2.4",
-    "typescript": "^4.9.3",
+    "typescript": "^4.9.4",
     "unplugin-auto-import": "^0.12.0",
     "unplugin-icons": "^0.14.14",
     "unplugin-vue-components": "^0.22.11",
