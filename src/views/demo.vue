@@ -281,7 +281,7 @@ provide(yAxisSymbol, {
     <div class="flex relative p-16 h-screen">
       <Splitpanes>
         <Pane class="min-w-[200px] w-[200px] mr-2" size="0">
-          <div class=" flex-shrink-0 w-full flex flex-col overflow-hidden">
+          <div class="h-full flex-shrink-0 w-full flex flex-col overflow-hidden">
             <div class="text-lg p-2 h-[48px] flex-shrink-0">
               Excel
             </div>
@@ -324,7 +324,8 @@ provide(yAxisSymbol, {
         <Pane>
           <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
           <Sheet
-            ref="sheetRef" :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource"
+            ref="sheetRef"
+            class="h-full" :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource"
             :item-component="SheetCell" :on-scroll-to-bottom="onScroll2Bottom" :on-context-menu="onContextMenu"
             :on-value-selector="onValueSelector" @scroll="syncScroll"
           >
