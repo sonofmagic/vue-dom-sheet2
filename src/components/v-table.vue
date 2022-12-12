@@ -439,6 +439,7 @@ provide(
     <VirtualList
       ref="containerRef" table table-class="vue-dom-sheet-virtual-table" class="vue-dom-sheet-virtual-list"
       data-key="key" :data-sources="dataSource" :data-component="itemComponent" :item-scoped-slots="itemScopedSlots"
+      item-tag="tr"
       @scroll.passive="onContainerScroll"
     >
       <template #thead>

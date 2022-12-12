@@ -69,7 +69,7 @@ export const VirtualProps = {
   },
   itemTag: {
     type: String,
-    default: 'tr',
+    default: 'div',
   },
   itemClass: {
     type: String,

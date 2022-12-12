@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { h, nextTick, onBeforeMount, ref } from 'vue-demi'
+import { h, nextTick, onBeforeMount, provide, ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
 import dayjs from 'dayjs'
-
 import { cloneDeep, groupBy } from 'lodash-es'
+import { yAxisSymbol } from './symbol'
 import Item from './item.vue'
 import yAxisItem from './yAxisItem.vue'
 import type { ContextMenuSlotContext, ICellAttrs, IDataSourceItem, IScrollOffset, ItemComponentProps, VSheetType } from '@/components/exports'
@@ -48,8 +48,8 @@ const { context: subPopoverContext } = usePopover()
 const dom = ref<HTMLDivElement>()
 const syncScroll = ({ scrollLeft, scrollTop }: IScrollOffset) => {
   if (dom.value) {
-    dom.value.scrollLeft = scrollLeft
-    dom.value.scrollTop = scrollTop
+    dom.value.$el.scrollLeft = scrollLeft
+    dom.value.$el.scrollTop = scrollTop
   }
 }
 
@@ -266,6 +266,12 @@ function onValueSelector({ attrs }) {
   console.log(attrs)
   return true
 }
+
+provide(yAxisSymbol, {
+  onChange(idx, v) {
+    sheetRef.value?.selectRow(idx, v)
+  },
+})
 </script>
 
 <template>
@@ -273,13 +279,15 @@ function onValueSelector({ attrs }) {
     <div class="flex relative p-16 h-screen">
       <div class="mr-2 flex-shrink-0 w-[200px] flex flex-col overflow-hidden">
         <div class="text-lg p-2 h-[48px] flex-shrink-0">
-          阿斯蒂芬
+          Excel
         </div>
-        <!-- <VirtualList
-          ref="dom" class="flex-1 overflow-y-auto w-full" data-key="personId" :data-sources="rows"
+        <VirtualList
+          ref="dom" class="flex-1 overflow-y-hidden"
+          data-key="key" :data-sources="dataSource"
           :data-component="yAxisItem"
-        /> -->
-        <div ref="dom" class="flex-1 overflow-y-hidden">
+          item-class="last:border-b"
+        />
+        <!-- <div ref="dom" class="flex-1 overflow-y-hidden">
           <div class="table border-collapse w-full">
             <div class="table-row-group">
               <div v-for="(row, idx) in dataSource" :key="row.key" class="h-[48px] border table-row">
@@ -290,7 +298,7 @@ function onValueSelector({ attrs }) {
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
         <!-- <div class="flex-1 flex"> -->
 
         <!-- <div class="table border-collapse w-full">
