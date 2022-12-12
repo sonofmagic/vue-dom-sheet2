@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { Pane, Splitpanes } from 'splitpanes'
+import 'splitpanes/dist/splitpanes.css'
 import { h, nextTick, onBeforeMount, provide, ref } from 'vue-demi'
 import { Checkbox, MessageBox } from 'element-ui'
 import dayjs from 'dayjs'
@@ -277,17 +279,19 @@ provide(yAxisSymbol, {
 <template>
   <div class="max-w-[100vw] max-h-[100vh]">
     <div class="flex relative p-16 h-screen">
-      <div class="mr-2 flex-shrink-0 w-[200px] flex flex-col overflow-hidden">
-        <div class="text-lg p-2 h-[48px] flex-shrink-0">
-          Excel
-        </div>
-        <VirtualList
-          ref="dom" class="flex-1 overflow-y-hidden"
-          data-key="key" :data-sources="dataSource"
-          :data-component="yAxisItem"
-          item-class="last:border-b"
-        />
-        <!-- <div ref="dom" class="flex-1 overflow-y-hidden">
+      <Splitpanes>
+        <Pane class="min-w-[200px] w-[200px] mr-2" size="0">
+          <div class=" flex-shrink-0 w-full flex flex-col overflow-hidden">
+            <div class="text-lg p-2 h-[48px] flex-shrink-0">
+              Excel
+            </div>
+            <VirtualList
+              ref="dom" class="flex-1 overflow-y-hidden"
+              data-key="key" :data-sources="dataSource"
+              :data-component="yAxisItem"
+              item-class="last:border-b"
+            />
+            <!-- <div ref="dom" class="flex-1 overflow-y-hidden">
           <div class="table border-collapse w-full">
             <div class="table-row-group">
               <div v-for="(row, idx) in dataSource" :key="row.key" class="h-[48px] border table-row">
@@ -299,9 +303,9 @@ provide(yAxisSymbol, {
             </div>
           </div>
         </div> -->
-        <!-- <div class="flex-1 flex"> -->
+            <!-- <div class="flex-1 flex"> -->
 
-        <!-- <div class="table border-collapse w-full">
+            <!-- <div class="table border-collapse w-full">
             <div class="table-row-group">
               <div v-for="(row, idx) in rows" :key="row.key" class="h-[48px] border table-row">
                 <div class="table-cell p-2">
@@ -314,20 +318,21 @@ provide(yAxisSymbol, {
               </div>
             </div>
           </div> -->
-        <!-- </div> -->
-      </div>
-
-      <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
-      <Sheet
-        ref="sheetRef" :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource"
-        :item-component="SheetCell" :on-scroll-to-bottom="onScroll2Bottom" :on-context-menu="onContextMenu"
-        :on-value-selector="onValueSelector" @scroll="syncScroll"
-      >
-        <template #context-menu="ctx">
-          <div class="border bg-white">
-            <div class="w-32 text-center">
-              <div class="w-32 text-center">
-                <!-- <div
+            <!-- </div> -->
+          </div>
+        </Pane>
+        <Pane>
+          <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
+          <Sheet
+            ref="sheetRef" :item-scoped-slots="itemScopedSlots" :columns="columns" :data-source="dataSource"
+            :item-component="SheetCell" :on-scroll-to-bottom="onScroll2Bottom" :on-context-menu="onContextMenu"
+            :on-value-selector="onValueSelector" @scroll="syncScroll"
+          >
+            <template #context-menu="ctx">
+              <div class="border bg-white">
+                <div class="w-32 text-center">
+                  <div class="w-32 text-center">
+                    <!-- <div
                 class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
                 @click="closeContextMenu(ctx)"
               >
@@ -339,126 +344,128 @@ provide(yAxisSymbol, {
               >
                 粘贴
               </div> -->
-                <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doLock(ctx)">
-                  锁定
-                </div>
-                <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="unlock(ctx)">
-                  解锁
-                </div>
-                <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doNote(ctx)">
-                  备注
-                </div>
-                <div
-                  class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                  @click="setDisabled(ctx, true)"
-                >
-                  禁用
-                </div>
-                <div
-                  class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                  @click="setDisabled(ctx, false)"
-                >
-                  解禁
-                </div>
-                <div
-                  class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                  @click="expandSubPopover($event)"
-                >
-                  行/列复制
-                </div>
+                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doLock(ctx)">
+                      锁定
+                    </div>
+                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="unlock(ctx)">
+                      解锁
+                    </div>
+                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doNote(ctx)">
+                      备注
+                    </div>
+                    <div
+                      class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                      @click="setDisabled(ctx, true)"
+                    >
+                      禁用
+                    </div>
+                    <div
+                      class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                      @click="setDisabled(ctx, false)"
+                    >
+                      解禁
+                    </div>
+                    <div
+                      class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                      @click="expandSubPopover($event)"
+                    >
+                      行/列复制
+                    </div>
 
-                <div
-                  class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                  @click="showLog(ctx)"
-                >
-                  复制上一区间
-                </div>
-                <div
-                  v-if="ctx.attrs.a"
-                  class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, {
-                    name: '测试数据',
-                    startTime: '11:11',
-                    endTime: '11:11',
-                    remark: '',
-                  })"
-                >
-                  set value
-                </div>
-                <div v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx)">
-                  clear
-                </div>
-                <div v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="resetColumns(ctx)">
-                  reset columns
-                </div>
-                <Popover :context="subPopoverContext" placement="right-start">
-                  <div class="border bg-white">
-                    <div class="w-32 text-center">
-                      <div class="w-32 text-center">
-                        <div
-                          class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                          @click="doCopy(ctx, 'top')"
-                        >
-                          从上往下
-                        </div>
-                        <div
-                          class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                          @click="doCopy(ctx, 'bottom')"
-                        >
-                          从下往上
-                        </div>
-                        <div
-                          class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                          @click="doCopy(ctx, 'left')"
-                        >
-                          从左往右
-                        </div>
-                        <div
-                          class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                          @click="doCopy(ctx, 'right')"
-                        >
-                          从右往左
+                    <div
+                      class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                      @click="showLog(ctx)"
+                    >
+                      复制上一区间
+                    </div>
+                    <div
+                      v-if="ctx.attrs.a"
+                      class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx, {
+                        name: '测试数据',
+                        startTime: '11:11',
+                        endTime: '11:11',
+                        remark: '',
+                      })"
+                    >
+                      set value
+                    </div>
+                    <div v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doSetValue(ctx)">
+                      clear
+                    </div>
+                    <div v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="resetColumns(ctx)">
+                      reset columns
+                    </div>
+                    <Popover :context="subPopoverContext" placement="right-start">
+                      <div class="border bg-white">
+                        <div class="w-32 text-center">
+                          <div class="w-32 text-center">
+                            <div
+                              class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                              @click="doCopy(ctx, 'top')"
+                            >
+                              从上往下
+                            </div>
+                            <div
+                              class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                              @click="doCopy(ctx, 'bottom')"
+                            >
+                              从下往上
+                            </div>
+                            <div
+                              class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                              @click="doCopy(ctx, 'left')"
+                            >
+                              从左往右
+                            </div>
+                            <div
+                              class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                              @click="doCopy(ctx, 'right')"
+                            >
+                              从右往左
+                            </div>
+                          </div>
                         </div>
                       </div>
+                    </Popover>
+                  </div>
+                </div>
+              </div>
+            </template>
+            <template #detail="{ attrs }">
+              <div class="bg-white w-[160px] text-xs border px-2 py-1 space-y-1">
+                <div class="text-[13px] text-[#333333]">
+                  {{ attrs?.item.value.name }}
+                </div>
+                <div class="text-[#333333]">
+                  {{ attrs?.item.value.startTime }}-{{ attrs?.item.value.endTime }} {{ attrs?.item.value.duration }}h
+                </div>
+                <div v-if="attrs?.item.value.remark" class="text-[#B1B9CC]">
+                  备注:{{ attrs?.item.value.remark }}
+                </div>
+              </div>
+            </template>
+            <template #value-selector="{ attrs }">
+              <div class="bg-white w-[360px] p-2 border">
+                <div>未定义</div>
+                <input class="border" placeholder="请输入">
+                <div class="overflow-auto h-[200px]">
+                  <div
+                    v-for="i in 30" :key="i" class="flex justify-around cursor-pointer hover:bg-blue-300"
+                    @click="selectValue($event, attrs, i)"
+                  >
+                    <div class="flex-1">
+                      撒大声地
+                    </div>
+                    <div class="flex-1">
+                      {{ i }}
                     </div>
                   </div>
-                </Popover>
-              </div>
-            </div>
-          </div>
-        </template>
-        <template #detail="{ attrs }">
-          <div class="bg-white w-[160px] text-xs border px-2 py-1 space-y-1">
-            <div class="text-[13px] text-[#333333]">
-              {{ attrs?.item.value.name }}
-            </div>
-            <div class="text-[#333333]">
-              {{ attrs?.item.value.startTime }}-{{ attrs?.item.value.endTime }} {{ attrs?.item.value.duration }}h
-            </div>
-            <div v-if="attrs?.item.value.remark" class="text-[#B1B9CC]">
-              备注:{{ attrs?.item.value.remark }}
-            </div>
-          </div>
-        </template>
-        <template #value-selector="{ attrs }">
-          <div class="bg-white w-[360px] p-2 border">
-            <div>未定义</div>
-            <input class="border" placeholder="请输入">
-            <div class="overflow-auto h-[200px]">
-              <div
-                v-for="i in 30" :key="i" class="flex justify-around cursor-pointer hover:bg-blue-300"
-                @click="selectValue($event, attrs, i)"
-              >
-                <div class="flex-1">
-                  撒大声地
-                </div>
-                <div class="flex-1">
-                  {{ i }}
                 </div>
               </div>
-            </div>
-          </div>
-        </template>
-      </Sheet>
+            </template>
+          </Sheet>
+        </Pane>
+      </Splitpanes>
     </div>
   </div>
 </template>
