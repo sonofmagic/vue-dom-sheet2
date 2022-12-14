@@ -14,7 +14,7 @@ const { onChange } = inject(yAxisSymbol, {})
 <template>
   <div class="h-[48px] border-t border-r border-l w-full">
     <div class="p-2">
-      <Checkbox v-model="source.checked" :true-label="true" :false-label="false" @change="onChange(props.index, $event)" />
+      <Checkbox v-model="source.checked" :true-label="1" :false-label="0" @change="onChange(props.index, $event)" />
       选中第{{ index + 1 }}行
     </div>
   </div>

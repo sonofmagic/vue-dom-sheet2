@@ -3,7 +3,7 @@
 import { nextTick, onMounted, provide, reactive, ref, shallowRef, toRefs } from 'vue-demi'
 import { cloneDeep, forEach, throttle } from 'lodash-es'
 import type { MaybeElement } from '@vueuse/core'
-import { unrefElement, useWindowScroll } from '@vueuse/core'
+import { onKeyStroke, unrefElement, useWindowScroll } from '@vueuse/core'
 import PerfectScrollbar from 'perfect-scrollbar'
 import type { IContextMenuContext } from './components'
 import { ContextMenu, Popover, Selection, VirtualList, useContextMenu, usePopover, useSelection } from './components'
@@ -16,11 +16,12 @@ import 'perfect-scrollbar/css/perfect-scrollbar.css'
 const props = defineProps<{
   dataSource: IDataSourceRow[]
   columns: IColumn[]
-  itemComponent: Function
+  itemComponent: Function | Object
   itemScopedSlots?: Record<string, unknown>
   onScrollToBottom?: ({ xAxisScrollbar, yAxisScrollbar }: { xAxisScrollbar: PerfectScrollbar; yAxisScrollbar: PerfectScrollbar }) => Promise<unknown> | unknown
   onContextMenu?: ({ selectedCellSet, menuContext }: { selectedCellSet: Set<IDataSourceItem<unknown>>; menuContext: IContextMenuContext }) => Record<string, any> | Boolean | Promise<Record<string, any> | Boolean>
   onValueSelector?: ({ attrs }: { attrs: ICellAttrs }) => Promise<boolean> | boolean
+  onKeyStrokeDelete?: ({ selectedCellSet, event }: { selectedCellSet: Set<IDataSourceItem<unknown>>; event: KeyboardEvent }) => Promise<boolean> | boolean
 }>()
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
@@ -29,7 +30,7 @@ const emit = defineEmits<{
   // (e: 'scrolltotop'): void
   // (e: 'scrolltoleft'): void
 }>()
-const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp, onValueSelector } = toRefs(props)
+const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp, onValueSelector, onKeyStrokeDelete } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
 const { x: windowX, y: windowY } = useWindowScroll()
@@ -82,6 +83,9 @@ const currentSelectionValues = ref<IDataSourceItem[]>()
 const startSelection = ref(false)
 const selectedCellSet = ref(new Set<IDataSourceItem>())
 const contextMenuAttrs = ref({})
+const dblclickCellAttrs = ref<ICellAttrs>()
+const detailCellAttrs = ref<ICellAttrs>()
+const dragCellAttrs = ref<ICellAttrs>()
 
 async function onContextmenu(e: MouseEvent, attrs: ICellAttrs) {
   e.preventDefault()
@@ -257,8 +261,6 @@ function onMouseup(e: MouseEvent, attrs: ICellAttrs) {
     selectCellOver(attrs)
 }
 
-const dblclickCellAttrs = ref<ICellAttrs>()
-
 async function onDblclick(e: MouseEvent, attrs: ICellAttrs) {
   // console.log('onDblclick', e)
   const target = getTdElement(e)
@@ -288,8 +290,6 @@ function _onMousemove(e: MouseEvent) {
 }
 
 const onMousemove = throttle(_onMousemove, 20)
-
-const detailCellAttrs = ref<ICellAttrs>()
 
 function onMouseenter(e: MouseEvent, attrs: ICellAttrs) {
   // console.log('onMouseenter',e)
@@ -367,7 +367,7 @@ async function onContainerScroll(payload: UIEvent) {
 // function onDrag(e: DragEvent, attrs: ICellAttrs) {
 //   console.log('onDrag', e, attrs)
 // }
-const dragCellAttrs = ref<ICellAttrs>()
+
 function onDrop(e: DragEvent, attrs: ICellAttrs) {
   // console.log('onDrop', e, attrs)
   if (dragCellAttrs.value)
@@ -406,7 +406,12 @@ function selectRow(idx: number, value = true) {
       selectedCellSet.value.delete(item)
   })
 }
-
+onKeyStroke('Delete', (event) => {
+  return onKeyStrokeDelete?.value?.({
+    selectedCellSet: selectedCellSet.value,
+    event,
+  })
+})
 // <{
 //   selectColumn: typeof selectColumn
 //   selectRow: typeof selectRow
@@ -436,38 +441,29 @@ provide(
 
 <template>
   <div ref="wrapperRef" class="vue-dom-sheet-wrapper">
-    <VirtualList
-      ref="containerRef" table table-class="vue-dom-sheet-virtual-table" class="vue-dom-sheet-virtual-list"
+    <VirtualList ref="containerRef" table table-class="vue-dom-sheet-virtual-table" class="vue-dom-sheet-virtual-list"
       data-key="key" :data-sources="dataSource" :data-component="itemComponent" :item-scoped-slots="itemScopedSlots"
-      item-tag="tr"
-      @scroll.passive="onContainerScroll"
-    >
+      item-tag="tr" @scroll.passive="onContainerScroll">
       <template #thead>
         <thead class="vue-dom-sheet-virtual-table-head">
           <tr>
-            <th
-              v-for="(t, i) in columns" :key="i" class="vue-dom-sheet-virtual-table-head-cell"
-              @click.stop="selectColumn(i)"
-            >
+            <th v-for="(t, i) in columns" :key="i" class="vue-dom-sheet-virtual-table-head-cell"
+              @click.stop="selectColumn(i)">
               {{ t.title }}
             </th>
           </tr>
         </thead>
       </template>
       <template #colgroup>
-        <col
-          v-for="col in columns" :key="col.key" :style="{
-            'min-width': `${col.width}px`,
-          }" :width="col.width"
-        >
+        <col v-for="col in columns" :key="col.key" :style="{
+          'min-width': `${col.width}px`,
+        }" :width="col.width">
       </template>
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />
         <ContextMenu :context="menuContext">
-          <slot
-            name="context-menu" :attrs="contextMenuAttrs" :selected-cell-set="selectedCellSet"
-            :menu-context="menuContext"
-          />
+          <slot name="context-menu" :attrs="contextMenuAttrs" :selected-cell-set="selectedCellSet"
+            :menu-context="menuContext" />
         </ContextMenu>
         <Popover :context="valueSelectorContext" placement="bottom-start">
           <slot name="value-selector" :attrs="dblclickCellAttrs" />
