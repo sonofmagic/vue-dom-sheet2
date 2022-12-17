@@ -26,7 +26,7 @@ function noop(x: unknown) { return x }
 function createTransformMethod(res: IWrapDataResponse, dataSourceRef: Ref<IDataSourceRow<unknown>[]>) {
   const { childKey, children = 'children', columns, rowKey } = res
 
-  return function transform(rows: IRow[]) {
+  return function transform(rows: IRow[], eachCell?: (cell: IDataSourceItem) => void) {
     const columnsLength = columns.length
     const data: IDataSourceRow[] = []
     for (let i = 0; i < rows.length; i++) {
@@ -52,6 +52,7 @@ function createTransformMethod(res: IWrapDataResponse, dataSourceRef: Ref<IDataS
           x,
           y,
         }
+        eachCell?.(td)
         tr.push(td)
       }
       data.push({
