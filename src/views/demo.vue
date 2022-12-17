@@ -275,6 +275,11 @@ function onKeyStrokeDelete(ctx) {
   })
   return true
 }
+function onCellDrop(s: ICellAttrs, t: ICellAttrs) {
+  console.log(s, t)
+  if (t.item.locked)
+    return false
+}
 provide(yAxisSymbol, {
   onChange(idx, v) {
     sheetRef.value?.selectRow(idx, Boolean(v))
@@ -291,8 +296,10 @@ provide(yAxisSymbol, {
             <div class="text-lg p-2 h-[48px] flex-shrink-0">
               Excel
             </div>
-            <VirtualList ref="dom" class="flex-1 overflow-y-hidden" data-key="key" :data-sources="dataSource"
-              :data-component="yAxisItem" item-class="last:border-b" />
+            <VirtualList
+              ref="dom" class="flex-1 overflow-y-hidden" data-key="key" :data-sources="dataSource"
+              :data-component="yAxisItem" item-class="last:border-b"
+            />
             <!-- <div ref="dom" class="flex-1 overflow-y-hidden">
           <div class="table border-collapse w-full">
             <div class="table-row-group">
@@ -325,10 +332,13 @@ provide(yAxisSymbol, {
         </Pane>
         <Pane>
           <!-- <Sheet :columns="columns" :dataSource="dataSource" @scroll="syncScroll"></Sheet> -->
-          <Sheet ref="sheetRef" class="h-full" :item-scoped-slots="itemScopedSlots" :columns="columns"
+          <Sheet
+            ref="sheetRef" class="h-full" :item-scoped-slots="itemScopedSlots" :columns="columns"
             :data-source="dataSource" :item-component="SheetCell" :on-scroll-to-bottom="onScroll2Bottom"
             :on-context-menu="onContextMenu" :on-value-selector="onValueSelector"
-            :on-key-stroke-delete="onKeyStrokeDelete" @scroll="syncScroll">
+            :on-key-stroke-delete="onKeyStrokeDelete" :on-cell-drop="onCellDrop"
+            @scroll="syncScroll"
+          >
             <template #context-menu="ctx">
               <div class="border bg-white">
                 <div class="w-32 text-center">
@@ -354,57 +364,77 @@ provide(yAxisSymbol, {
                     <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="doNote(ctx)">
                       备注
                     </div>
-                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                      @click="setDisabled(ctx, true)">
+                    <div
+                      class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                      @click="setDisabled(ctx, true)"
+                    >
                       禁用
                     </div>
-                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                      @click="setDisabled(ctx, false)">
+                    <div
+                      class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                      @click="setDisabled(ctx, false)"
+                    >
                       解禁
                     </div>
-                    <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                      @click="expandSubPopover($event)">
+                    <div
+                      class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                      @click="expandSubPopover($event)"
+                    >
                       行/列复制
                     </div>
 
                     <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer" @click="showLog(ctx)">
                       复制上一区间
                     </div>
-                    <div v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                    <div
+                      v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
                       @click="doSetValue(ctx, {
                         name: '测试数据',
                         startTime: '11:11',
                         endTime: '11:11',
                         remark: '',
-                      })">
+                      })"
+                    >
                       set value
                     </div>
-                    <div v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                      @click="doSetValue(ctx)">
+                    <div
+                      v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                      @click="doSetValue(ctx)"
+                    >
                       clear
                     </div>
-                    <div v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                      @click="resetColumns(ctx)">
+                    <div
+                      v-if="ctx.attrs.a" class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                      @click="resetColumns(ctx)"
+                    >
                       reset columns
                     </div>
                     <Popover :context="subPopoverContext" placement="right-start">
                       <div class="border bg-white">
                         <div class="w-32 text-center">
                           <div class="w-32 text-center">
-                            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                              @click="doCopy(ctx, 'top')">
+                            <div
+                              class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                              @click="doCopy(ctx, 'top')"
+                            >
                               从上往下
                             </div>
-                            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                              @click="doCopy(ctx, 'bottom')">
+                            <div
+                              class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                              @click="doCopy(ctx, 'bottom')"
+                            >
                               从下往上
                             </div>
-                            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                              @click="doCopy(ctx, 'left')">
+                            <div
+                              class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                              @click="doCopy(ctx, 'left')"
+                            >
                               从左往右
                             </div>
-                            <div class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
-                              @click="doCopy(ctx, 'right')">
+                            <div
+                              class="hover:bg-blue-200 hover:text-blue-600 px-4 py-1 cursor-pointer"
+                              @click="doCopy(ctx, 'right')"
+                            >
                               从右往左
                             </div>
                           </div>
@@ -433,8 +463,10 @@ provide(yAxisSymbol, {
                 <div>未定义</div>
                 <input class="border" placeholder="请输入">
                 <div class="overflow-auto h-[200px]">
-                  <div v-for="i in 30" :key="i" class="flex justify-around cursor-pointer hover:bg-blue-300"
-                    @click="selectValue($event, attrs, i)">
+                  <div
+                    v-for="i in 30" :key="i" class="flex justify-around cursor-pointer hover:bg-blue-300"
+                    @click="selectValue($event, attrs, i)"
+                  >
                     <div class="flex-1">
                       撒大声地
                     </div>

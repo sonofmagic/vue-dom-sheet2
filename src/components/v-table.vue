@@ -22,6 +22,9 @@ const props = defineProps<{
   onContextMenu?: ({ selectedCellSet, menuContext }: { selectedCellSet: Set<IDataSourceItem<unknown>>; menuContext: IContextMenuContext }) => Record<string, any> | Boolean | Promise<Record<string, any> | Boolean>
   onValueSelector?: ({ attrs }: { attrs: ICellAttrs }) => Promise<boolean> | boolean
   onKeyStrokeDelete?: ({ selectedCellSet, event }: { selectedCellSet: Set<IDataSourceItem<unknown>>; event: KeyboardEvent }) => Promise<boolean> | boolean
+  onCellDrop?: (sourceAttrs: ICellAttrs, targetAttrs: ICellAttrs) => boolean
+  onCellDragstart?: () => boolean
+  onCellDragend?: () => boolean
 }>()
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
@@ -30,7 +33,7 @@ const emit = defineEmits<{
   // (e: 'scrolltotop'): void
   // (e: 'scrolltoleft'): void
 }>()
-const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp, onValueSelector, onKeyStrokeDelete } = toRefs(props)
+const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp, onValueSelector, onKeyStrokeDelete, onCellDragend, onCellDragstart, onCellDrop } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
 const { x: windowX, y: windowY } = useWindowScroll()
@@ -357,10 +360,6 @@ async function onContainerScroll(payload: UIEvent) {
         scrollToBottomLoading.value = false
       }
     }
-
-    // @ts-expect-error
-    // if (target.scrollWidth === target.scrollLeft)
-    //   emit('scrolltoright')
   }
 }
 
@@ -370,17 +369,22 @@ async function onContainerScroll(payload: UIEvent) {
 
 function onDrop(e: DragEvent, attrs: ICellAttrs) {
   // console.log('onDrop', e, attrs)
-  if (dragCellAttrs.value)
-    attrs.item.value = cloneDeep(dragCellAttrs.value.item.value)
+  const result = onCellDrop?.value?.(dragCellAttrs.value!, attrs)
+  if (result !== false) {
+    if (dragCellAttrs.value)
+      attrs.item.value = cloneDeep(dragCellAttrs.value.item.value)
+  }
 }
 
 function onDragstart(e: DragEvent, attrs: ICellAttrs) {
   // console.log('onDragstart', e, attrs)
+  onCellDragstart?.value?.()
   dragCellAttrs.value = attrs
 }
 
 function onDragend(e: DragEvent, attrs: ICellAttrs) {
   // console.log('onDragend', e, attrs)
+  onCellDragend?.value?.()
   dragCellAttrs.value = undefined
 }
 
@@ -441,29 +445,37 @@ provide(
 
 <template>
   <div ref="wrapperRef" class="vue-dom-sheet-wrapper">
-    <VirtualList ref="containerRef" table table-class="vue-dom-sheet-virtual-table" class="vue-dom-sheet-virtual-list"
+    <VirtualList
+      ref="containerRef" table table-class="vue-dom-sheet-virtual-table" class="vue-dom-sheet-virtual-list"
       data-key="key" :data-sources="dataSource" :data-component="itemComponent" :item-scoped-slots="itemScopedSlots"
-      item-tag="tr" @scroll.passive="onContainerScroll">
+      item-tag="tr" @scroll.passive="onContainerScroll"
+    >
       <template #thead>
         <thead class="vue-dom-sheet-virtual-table-head">
           <tr>
-            <th v-for="(t, i) in columns" :key="i" class="vue-dom-sheet-virtual-table-head-cell"
-              @click.stop="selectColumn(i)">
+            <th
+              v-for="(t, i) in columns" :key="i" class="vue-dom-sheet-virtual-table-head-cell"
+              @click.stop="selectColumn(i)"
+            >
               {{ t.title }}
             </th>
           </tr>
         </thead>
       </template>
       <template #colgroup>
-        <col v-for="col in columns" :key="col.key" :style="{
-          'min-width': `${col.width}px`,
-        }" :width="col.width">
+        <col
+          v-for="col in columns" :key="col.key" :style="{
+            'min-width': `${col.width}px`,
+          }" :width="col.width"
+        >
       </template>
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />
         <ContextMenu :context="menuContext">
-          <slot name="context-menu" :attrs="contextMenuAttrs" :selected-cell-set="selectedCellSet"
-            :menu-context="menuContext" />
+          <slot
+            name="context-menu" :attrs="contextMenuAttrs" :selected-cell-set="selectedCellSet"
+            :menu-context="menuContext"
+          />
         </ContextMenu>
         <Popover :context="valueSelectorContext" placement="bottom-start">
           <slot name="value-selector" :attrs="dblclickCellAttrs" />
