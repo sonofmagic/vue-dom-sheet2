@@ -26,12 +26,13 @@ function noop(x: unknown) { return x }
 function createTransformMethod(res: IWrapDataResponse, dataSourceRef: Ref<IDataSourceRow<unknown>[]>) {
   const { childKey, children = 'children', columns, rowKey } = res
 
-  return function transform(rows: IRow[], eachCell?: (cell: IDataSourceItem) => void) {
+  return function transform(rows: IRow[], eachCell?: (cell: IDataSourceItem, row: IRow, key: string) => void) {
     const columnsLength = columns.length
     const data: IDataSourceRow[] = []
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i]
       const tr = []
+      const key = rowKey ? row[rowKey] : `row${i}`
       for (let j = 0; j < columnsLength; j++) {
         const value = row[children][j]
         const y = i + dataSourceRef.value.length
@@ -52,12 +53,12 @@ function createTransformMethod(res: IWrapDataResponse, dataSourceRef: Ref<IDataS
           x,
           y,
         }
-        eachCell?.(td)
+        eachCell?.(td, row, key)
         tr.push(td)
       }
       data.push({
         cells: tr,
-        key: rowKey ? row[rowKey] : `row${i}`,
+        key,
         row,
       })
     }
