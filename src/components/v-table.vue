@@ -22,9 +22,9 @@ const props = defineProps<{
   onContextMenu?: ({ selectedCellSet, menuContext }: { selectedCellSet: Set<IDataSourceItem<unknown>>; menuContext: IContextMenuContext }) => Record<string, any> | Boolean | Promise<Record<string, any> | Boolean>
   onValueSelector?: ({ attrs }: { attrs: ICellAttrs }) => Promise<boolean> | boolean
   onKeyStrokeDelete?: ({ selectedCellSet, event }: { selectedCellSet: Set<IDataSourceItem<unknown>>; event: KeyboardEvent }) => Promise<boolean> | boolean
-  onCellDrop?: (sourceAttrs: ICellAttrs, targetAttrs: ICellAttrs) => boolean
-  onCellDragstart?: () => boolean
-  onCellDragend?: () => boolean
+  onCellDrop?: (sourceAttrs: ICellAttrs, targetAttrs: ICellAttrs) => boolean | undefined
+  onCellDragstart?: () => boolean | undefined
+  onCellDragend?: () => boolean | undefined
 }>()
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
