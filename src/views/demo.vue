@@ -15,7 +15,7 @@ const page = ref(0)
 const { columns, dataSource, transform } = useDataSource(() => {
   const columns = []
 
-  const columnsLength = 30
+  const columnsLength = 1
   const firstDay = dayjs().startOf('M')
   for (let i = 0; i < columnsLength; i++) {
     columns.push({

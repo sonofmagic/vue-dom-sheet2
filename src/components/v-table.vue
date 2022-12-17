@@ -512,7 +512,7 @@ provide(
   }
 
   .vue-dom-sheet-virtual-list {
-    @apply relative;
+    @apply relative w-full;
   }
 
 }
