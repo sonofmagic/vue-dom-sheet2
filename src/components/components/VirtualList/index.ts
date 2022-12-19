@@ -9,12 +9,12 @@ import { VirtualProps } from './props'
 
 const EVENT_TYPE = {
   ITEM: 'item_resize',
-  SLOT: 'slot_resize',
+  SLOT: 'slot_resize'
 }
 const SLOT_TYPE = {
   HEADER: 'thead', // string value also use for aria role attribute
   FOOTER: 'tfoot',
-  COLGROUP: 'colgroup',
+  COLGROUP: 'colgroup'
 }
 
 const VirtualList = defineComponent({
@@ -23,7 +23,7 @@ const VirtualList = defineComponent({
 
   data() {
     return {
-      range: null,
+      range: null
     }
   },
 
@@ -44,7 +44,7 @@ const VirtualList = defineComponent({
 
     offset(newValue) {
       this.scrollToOffset(newValue)
-    },
+    }
   },
 
   created() {
@@ -67,37 +67,33 @@ const VirtualList = defineComponent({
 
     if (this.pageMode) {
       document.addEventListener('scroll', this.onScroll, {
-        passive: false,
+        passive: false
       })
     }
   },
 
   deactivated() {
-    if (this.pageMode)
-      document.removeEventListener('scroll', this.onScroll)
+    if (this.pageMode) document.removeEventListener('scroll', this.onScroll)
   },
 
   mounted() {
     // set position
-    if (this.start)
-      this.scrollToIndex(this.start)
-    else if (this.offset)
-      this.scrollToOffset(this.offset)
+    if (this.start) this.scrollToIndex(this.start)
+    else if (this.offset) this.scrollToOffset(this.offset)
 
     // in page mode we bind scroll event to document
     if (this.pageMode) {
       this.updatePageModeFront()
 
       document.addEventListener('scroll', this.onScroll, {
-        passive: false,
+        passive: false
       })
     }
   },
 
   beforeUnmount() {
     this.virtual.destroy()
-    if (this.pageMode)
-      document.removeEventListener('scroll', this.onScroll)
+    if (this.pageMode) document.removeEventListener('scroll', this.onScroll)
   },
 
   methods: {
@@ -114,9 +110,11 @@ const VirtualList = defineComponent({
     // return current scroll offset
     getOffset() {
       if (this.pageMode) {
-        return document.documentElement[this.directionKey] || document.body[this.directionKey]
-      }
-      else {
+        return (
+          document.documentElement[this.directionKey] ||
+          document.body[this.directionKey]
+        )
+      } else {
         const { root } = this.$refs
         return root ? Math.ceil(root[this.directionKey]) : 0
       }
@@ -127,8 +125,7 @@ const VirtualList = defineComponent({
       const key = this.isHorizontal ? 'clientWidth' : 'clientHeight'
       if (this.pageMode) {
         return document.documentElement[key] || document.body[key]
-      }
-      else {
+      } else {
         const { root } = this.$refs
         return root ? Math.ceil(root[key]) : 0
       }
@@ -139,8 +136,7 @@ const VirtualList = defineComponent({
       const key = this.isHorizontal ? 'scrollWidth' : 'scrollHeight'
       if (this.pageMode) {
         return document.documentElement[key] || document.body[key]
-      }
-      else {
+      } else {
         const { root } = this.$refs
         return root ? Math.ceil(root[key]) : 0
       }
@@ -151,11 +147,9 @@ const VirtualList = defineComponent({
       if (this.pageMode) {
         document.body[this.directionKey] = offset
         document.documentElement[this.directionKey] = offset
-      }
-      else {
+      } else {
         const { root } = this.$refs
-        if (root)
-          root[this.directionKey] = offset
+        if (root) root[this.directionKey] = offset
       }
     },
 
@@ -164,8 +158,7 @@ const VirtualList = defineComponent({
       // scroll to bottom
       if (index >= this.dataSources.length - 1) {
         this.scrollToBottom()
-      }
-      else {
+      } else {
         const offset = this.virtual.getOffset(index)
         this.scrollToOffset(offset)
       }
@@ -182,7 +175,10 @@ const VirtualList = defineComponent({
         // maybe list doesn't render and calculate to last range
         // so we need retry in next event loop until it really at bottom
         setTimeout(() => {
-          if (this.getOffset() + this.getClientSize() + 1 < this.getScrollSize())
+          if (
+            this.getOffset() + this.getClientSize() + 1 <
+            this.getScrollSize()
+          )
             this.scrollToBottom()
         }, 3)
       }
@@ -195,7 +191,9 @@ const VirtualList = defineComponent({
       if (root) {
         const rect = root.getBoundingClientRect()
         const { defaultView } = root.ownerDocument
-        const offsetFront = this.isHorizontal ? rect.left + defaultView.pageXOffset : rect.top + defaultView.pageYOffset
+        const offsetFront = this.isHorizontal
+          ? rect.left + defaultView.pageXOffset
+          : rect.top + defaultView.pageYOffset
         this.virtual.updateParam('slotHeaderSize', offsetFront)
       }
     },
@@ -217,9 +215,9 @@ const VirtualList = defineComponent({
           keeps: this.keeps,
           estimateSize: this.estimateSize,
           buffer: Math.round(this.keeps / 3), // recommend for a third of keeps
-          uniqueIds: this.getUniqueIdFromDataSources(),
+          uniqueIds: this.getUniqueIdFromDataSources()
         },
-        this.onRangeChanged,
+        this.onRangeChanged
       )
 
       // sync initial range
@@ -228,7 +226,11 @@ const VirtualList = defineComponent({
 
     getUniqueIdFromDataSources() {
       const { dataKey } = this
-      return this.dataSources.map(dataSource => (typeof dataKey === 'function' ? dataKey(dataSource) : dataSource[dataKey]))
+      return this.dataSources.map((dataSource) =>
+        typeof dataKey === 'function'
+          ? dataKey(dataSource)
+          : dataSource[dataKey]
+      )
     },
 
     // event called when each item mounted or size changed
@@ -244,8 +246,7 @@ const VirtualList = defineComponent({
       else if (type === SLOT_TYPE.FOOTER)
         this.virtual.updateParam('slotFooterSize', size)
 
-      if (hasInit)
-        this.virtual.handleSlotSizeChange()
+      if (hasInit) this.virtual.handleSlotSizeChange()
     },
 
     // here is the rerendering entry
@@ -271,9 +272,16 @@ const VirtualList = defineComponent({
     emitEvent(offset, clientSize, scrollSize, evt) {
       this.$emit('scroll', evt, this.virtual.getRange())
 
-      if (this.virtual.isFront() && !!this.dataSources.length && offset - this.topThreshold <= 0)
+      if (
+        this.virtual.isFront() &&
+        !!this.dataSources.length &&
+        offset - this.topThreshold <= 0
+      )
         this.$emit('totop')
-      else if (this.virtual.isBehind() && offset + clientSize + this.bottomThreshold >= scrollSize)
+      else if (
+        this.virtual.isBehind() &&
+        offset + clientSize + this.bottomThreshold >= scrollSize
+      )
         this.$emit('tobottom')
     },
 
@@ -283,12 +291,25 @@ const VirtualList = defineComponent({
     getRenderSlots(h) {
       const slots = []
       const { start, end } = this.range
-      const { dataSources, dataKey, itemClass, itemTag, itemStyle, isHorizontal, extraProps, dataComponent, itemScopedSlots } = this
+      const {
+        dataSources,
+        dataKey,
+        itemClass,
+        itemTag,
+        itemStyle,
+        isHorizontal,
+        extraProps,
+        dataComponent,
+        itemScopedSlots
+      } = this
       const slotComponent = this.$scopedSlots && this.$scopedSlots.item
       for (let index = start; index <= end; index++) {
         const dataSource = dataSources[index]
         if (dataSource) {
-          const uniqueKey = typeof dataKey === 'function' ? dataKey(dataSource) : dataSource[dataKey]
+          const uniqueKey =
+            typeof dataKey === 'function'
+              ? dataKey(dataSource)
+              : dataSource[dataKey]
           if (typeof uniqueKey === 'string' || typeof uniqueKey === 'number') {
             slots.push(
               h(Item, {
@@ -302,23 +323,25 @@ const VirtualList = defineComponent({
                   extraProps,
                   component: dataComponent,
                   slotComponent,
-                  scopedSlots: itemScopedSlots,
+                  scopedSlots: itemScopedSlots
                 },
                 style: itemStyle,
-                class: `${itemClass}${this.itemClassAdd ? ` ${this.itemClassAdd(index)}` : ''}`,
-              }),
+                class: `${itemClass}${
+                  this.itemClassAdd ? ` ${this.itemClassAdd(index)}` : ''
+                }`
+              })
+            )
+          } else {
+            console.warn(
+              `Cannot get the data-key '${dataKey}' from data-sources.`
             )
           }
-          else {
-            console.warn(`Cannot get the data-key '${dataKey}' from data-sources.`)
-          }
-        }
-        else {
+        } else {
           console.warn(`Cannot get the index '${index}' from data-sources.`)
         }
       }
       return slots
-    },
+    }
   },
 
   // render function, a closer-to-the-compiler alternative to templates
@@ -326,34 +349,58 @@ const VirtualList = defineComponent({
   render(h) {
     const { header, footer, colgroup, append, thead, tfoot } = this.$slots
     const { padFront, padBehind } = this.range
-    const { isHorizontal, pageMode, rootTag, wrapTag, wrapClass, wrapStyle, headerTag, headerClass, headerStyle, footerTag, footerClass, footerStyle, colgroupClass, colgroupStyle, tableClass, tableStyle, table } = this
-    const paddingStyle = { padding: isHorizontal ? `0px ${padBehind}px 0px ${padFront}px` : `${padFront}px 0px ${padBehind}px` }
-    const wrapperStyle = wrapStyle ? Object.assign({}, wrapStyle, paddingStyle) : paddingStyle
+    const {
+      isHorizontal,
+      pageMode,
+      rootTag,
+      wrapTag,
+      wrapClass,
+      wrapStyle,
+      headerTag,
+      headerClass,
+      headerStyle,
+      footerTag,
+      footerClass,
+      footerStyle,
+      colgroupClass,
+      colgroupStyle,
+      tableClass,
+      tableStyle,
+      table
+    } = this
+    const paddingStyle = {
+      padding: isHorizontal
+        ? `0px ${padBehind}px 0px ${padFront}px`
+        : `${padFront}px 0px ${padBehind}px`
+    }
+    const wrapperStyle = wrapStyle
+      ? Object.assign({}, wrapStyle, paddingStyle)
+      : paddingStyle
 
     return h(
       rootTag,
       {
         ref: 'root',
         on: {
-          '&scroll': !pageMode && this.onScroll,
-        },
+          '&scroll': !pageMode && this.onScroll
+        }
       },
       [
         // header slot
         header
           ? h(
-            Slot,
-            {
-              class: headerClass,
-              style: headerStyle,
-              props: {
-                tag: headerTag,
-                event: EVENT_TYPE.SLOT,
-                uniqueKey: SLOT_TYPE.HEADER,
+              Slot,
+              {
+                class: headerClass,
+                style: headerStyle,
+                props: {
+                  tag: headerTag,
+                  event: EVENT_TYPE.SLOT,
+                  uniqueKey: SLOT_TYPE.HEADER
+                }
               },
-            },
-            header,
-          )
+              header
+            )
           : null,
 
         // main list
@@ -362,9 +409,9 @@ const VirtualList = defineComponent({
           {
             class: wrapClass,
             attrs: {
-              role: 'group',
+              role: 'group'
             },
-            style: wrapperStyle,
+            style: wrapperStyle
           },
           table
             ? [
@@ -372,48 +419,48 @@ const VirtualList = defineComponent({
                   'table',
                   {
                     class: tableClass,
-                    style: tableStyle,
+                    style: tableStyle
                   },
                   [
                     colgroup
                       ? h(
-                        Slot,
-                        {
-                          class: colgroupClass,
-                          style: colgroupStyle,
-                          props: {
-                            tag: 'colgroup',
-                            event: EVENT_TYPE.SLOT,
-                            uniqueKey: SLOT_TYPE.COLGROUP,
+                          Slot,
+                          {
+                            class: colgroupClass,
+                            style: colgroupStyle,
+                            props: {
+                              tag: 'colgroup',
+                              event: EVENT_TYPE.SLOT,
+                              uniqueKey: SLOT_TYPE.COLGROUP
+                            }
                           },
-                        },
-                        colgroup,
-                      )
+                          colgroup
+                        )
                       : null,
                     thead,
                     h('tbody', {}, this.getRenderSlots(h)),
-                    tfoot,
-                  ],
-                ),
+                    tfoot
+                  ]
+                )
               ]
-            : this.getRenderSlots(h),
+            : this.getRenderSlots(h)
         ),
 
         // footer slot
         footer
           ? h(
-            Slot,
-            {
-              class: footerClass,
-              style: footerStyle,
-              props: {
-                tag: footerTag,
-                event: EVENT_TYPE.SLOT,
-                uniqueKey: SLOT_TYPE.FOOTER,
+              Slot,
+              {
+                class: footerClass,
+                style: footerStyle,
+                props: {
+                  tag: footerTag,
+                  event: EVENT_TYPE.SLOT,
+                  uniqueKey: SLOT_TYPE.FOOTER
+                }
               },
-            },
-            footer,
-          )
+              footer
+            )
           : null,
 
         // an empty element use to scroll to bottom
@@ -421,10 +468,10 @@ const VirtualList = defineComponent({
           ref: 'shepherd',
           style: {
             width: isHorizontal ? '0px' : '100%',
-            height: isHorizontal ? '100%' : '0px',
-          },
+            height: isHorizontal ? '100%' : '0px'
+          }
         }),
-        append,
+        append
         // h(
         //   'table',
         //   {
@@ -436,9 +483,9 @@ const VirtualList = defineComponent({
 
         //   ]
         // )
-      ],
+      ]
     )
-  },
+  }
 })
 
 export default VirtualList

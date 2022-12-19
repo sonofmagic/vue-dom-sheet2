@@ -36,7 +36,7 @@ const { columns, dataSource, transform } = useDataSource(() => {
 let mockData
 onBeforeMount(async () => {
   const { data } = await import('./mock.json')
-  mockData = data.slice(0,1)
+  mockData = data //.slice(0,1)
   for (let i = 0; i < 1; i++) {
     dataSource.value.push(...transform(mockData.map((x, j) => {
       return {
@@ -146,7 +146,7 @@ function expandSubPopover(e: MouseEvent) {
 }
 
 async function onScroll2Bottom({ yAxisScrollbar }) {
-  // console.log(yAxisScrollbar)
+  console.log(yAxisScrollbar)
   await wait()
   // console.log(mockData)
   dataSource.value.push(...transform(cloneDeep(mockData.map((x, j) => {

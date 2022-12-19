@@ -330,25 +330,29 @@ function resetDataSetSelected() {
   })
   selectedCellSet.value.clear()
 }
-
-async function onContainerScroll(payload: UIEvent) {
-  const target = payload.target
-  if (target) {
+// 为了判断滚动方向
+const internalScrollY = ref(0)
+async function onContainerScroll(e: Event) {
+  const eventTarget = (
+    e.target === document ? (e.target as Document).documentElement : e.target
+  ) as HTMLElement
+  if (eventTarget) {
     emit('scroll', {
-      // @ts-expect-error
-      scrollLeft: target.scrollLeft ?? 0,
-      // @ts-expect-error
-      scrollTop: target.scrollTop ?? 0,
+      scrollLeft: eventTarget.scrollLeft ?? 0,
+      scrollTop: eventTarget.scrollTop ?? 0,
     })
 
     let shouldTrigger = false
 
     // be aware of difference between clientHeight & offsetHeight & window.getComputedStyle().height
-    const scrollBottom = target.scrollTop + target.clientHeight
-    shouldTrigger = target.scrollHeight - scrollBottom <= 0
-    // console.log(target.scrollHeight,scrollBottom,target.scrollTop,target.clientHeight)
+    const scrollBottom = eventTarget.scrollTop + eventTarget.clientHeight
+    // 滚到底了且是向下滚动的
+    shouldTrigger = eventTarget.scrollHeight - scrollBottom <= 0 && eventTarget.scrollTop > internalScrollY.value
+    // console.log(shouldTrigger,internalScrollY.value)
+    internalScrollY.value = eventTarget.scrollTop
+    // console.log(eventTarget.scrollHeight, scrollBottom, eventTarget.scrollTop, eventTarget.clientHeight)
     // console.log(target.scrollTop, target.clientHeight, target.scrollHeight)
-    if (target.scrollTop && shouldTrigger && !scrollToBottomLoading.value) {
+    if (shouldTrigger && !scrollToBottomLoading.value) {
       try {
         scrollToBottomLoading.value = true
         await onScrollToBottom?.value?.({
@@ -446,37 +450,29 @@ provide(
 
 <template>
   <div ref="wrapperRef" class="vue-dom-sheet-wrapper">
-    <VirtualList
-      ref="containerRef" table table-class="vue-dom-sheet-virtual-table" class="vue-dom-sheet-virtual-list"
+    <VirtualList ref="containerRef" table table-class="vue-dom-sheet-virtual-table" class="vue-dom-sheet-virtual-list"
       data-key="key" :data-sources="dataSource" :data-component="itemComponent" :item-scoped-slots="itemScopedSlots"
-      item-tag="tr" @scroll.passive="onContainerScroll"
-    >
+      item-tag="tr" @scroll.passive="onContainerScroll">
       <template #thead>
         <thead class="vue-dom-sheet-virtual-table-head">
           <tr>
-            <th
-              v-for="(t, i) in columns" :key="i" class="vue-dom-sheet-virtual-table-head-cell"
-              @click.stop="selectColumn(i)"
-            >
+            <th v-for="(t, i) in columns" :key="i" class="vue-dom-sheet-virtual-table-head-cell"
+              @click.stop="selectColumn(i)">
               {{ t.title }}
             </th>
           </tr>
         </thead>
       </template>
       <template #colgroup>
-        <col
-          v-for="col in columns" :key="col.key" :style="{
-            'min-width': `${col.width}px`,
-          }" :width="col.width"
-        >
+        <col v-for="col in columns" :key="col.key" :style="{
+          'min-width': `${col.width}px`,
+        }" :width="col.width">
       </template>
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />
         <ContextMenu :context="menuContext">
-          <slot
-            name="context-menu" :attrs="contextMenuAttrs" :selected-cell-set="selectedCellSet"
-            :menu-context="menuContext"
-          />
+          <slot name="context-menu" :attrs="contextMenuAttrs" :selected-cell-set="selectedCellSet"
+            :menu-context="menuContext" />
         </ContextMenu>
         <Popover :context="valueSelectorContext" placement="bottom-start">
           <slot name="value-selector" :attrs="dblclickCellAttrs" />

@@ -1,17 +1,14 @@
 import { camelCase, debounce } from 'lodash-es'
 
 export const getStyle = function (element, styleName) {
-  if (!element || !styleName)
-    return null
+  if (!element || !styleName) return null
   styleName = camelCase(styleName)
-  if (styleName === 'float')
-    styleName = 'cssFloat'
+  if (styleName === 'float') styleName = 'cssFloat'
 
   try {
     const computed = document.defaultView.getComputedStyle(element, '')
     return element.style[styleName] || computed ? computed[styleName] : null
-  }
-  catch (e) {
+  } catch (e) {
     return element.style[styleName]
   }
 }
@@ -33,8 +30,7 @@ export const getScrollContainer = (el, vertical) => {
     if ([window, document, document.documentElement].includes(parent))
       return window
 
-    if (isScroll(parent, vertical))
-      return parent
+    if (isScroll(parent, vertical)) return parent
 
     parent = parent.parentNode
   }
@@ -43,13 +39,20 @@ export const getScrollContainer = (el, vertical) => {
 }
 let isFunction = (functionToCheck) => {
   const getType = {}
-  return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]'
+  return (
+    functionToCheck &&
+    getType.toString.call(functionToCheck) === '[object Function]'
+  )
 }
 export const isUndefined = (val: any) => {
   return val === undefined
 }
 
-if (typeof /./ !== 'function' && typeof Int8Array !== 'object' && (typeof document.childNodes !== 'function')) {
+if (
+  typeof /./ !== 'function' &&
+  typeof Int8Array !== 'object' &&
+  typeof document.childNodes !== 'function'
+) {
   isFunction = function (obj) {
     return typeof obj === 'function' || false
   }
@@ -63,11 +66,9 @@ export function isHtmlElement(node) {
 }
 
 const getStyleComputedProperty = (element, property) => {
-  if (element === window)
-    element = document.documentElement
+  if (element === window) element = document.documentElement
 
-  if (element.nodeType !== 1)
-    return []
+  if (element.nodeType !== 1) return []
 
   // NOTE: 1 DOM access here
   const css = window.getComputedStyle(element, null)
@@ -75,8 +76,7 @@ const getStyleComputedProperty = (element, property) => {
 }
 
 const entries = (obj) => {
-  return Object.keys(obj || {})
-    .map(key => ([key, obj[key]]))
+  return Object.keys(obj || {}).map((key) => [key, obj[key]])
 }
 
 const getPositionSize = (el, prop) => {
@@ -97,25 +97,24 @@ const scope = 'ElInfiniteScroll'
 const attributes = {
   delay: {
     type: Number,
-    default: 200,
+    default: 200
   },
   distance: {
     type: Number,
-    default: 0,
+    default: 0
   },
   disabled: {
     type: Boolean,
-    default: false,
+    default: false
   },
   immediate: {
     type: Boolean,
-    default: true,
-  },
+    default: true
+  }
 }
 
 const getScrollOptions = (el, vm) => {
-  if (!isHtmlElement(el))
-    return {}
+  if (!isHtmlElement(el)) return {}
 
   return entries(attributes).reduce((map, [key, option]) => {
     const { type, default: defaultValue } = option
@@ -127,7 +126,11 @@ const getScrollOptions = (el, vm) => {
         value = Number.isNaN(value) ? defaultValue : value
         break
       case Boolean:
-        value = isDefined(value) ? value === 'false' ? false : Boolean(value) : defaultValue
+        value = isDefined(value)
+          ? value === 'false'
+            ? false
+            : Boolean(value)
+          : defaultValue
         break
       default:
         value = type(value)
@@ -137,18 +140,16 @@ const getScrollOptions = (el, vm) => {
   }, {})
 }
 
-const getElementTop = el => el.getBoundingClientRect().top
+const getElementTop = (el) => el.getBoundingClientRect().top
 
 const handleScroll = function (cb) {
   const { el, vm, container, observer } = this[scope]
   const { distance, disabled } = getScrollOptions(el, vm)
 
-  if (disabled)
-    return
+  if (disabled) return
 
   const containerInfo = container.getBoundingClientRect()
-  if (!containerInfo.width && !containerInfo.height)
-    return
+  if (!containerInfo.width && !containerInfo.height) return
 
   let shouldTrigger = false
 
@@ -156,18 +157,19 @@ const handleScroll = function (cb) {
     // be aware of difference between clientHeight & offsetHeight & window.getComputedStyle().height
     const scrollBottom = container.scrollTop + getClientHeight(container)
     shouldTrigger = container.scrollHeight - scrollBottom <= distance
-  }
-  else {
-    const heightBelowTop = getOffsetHeight(el) + getElementTop(el) - getElementTop(container)
+  } else {
+    const heightBelowTop =
+      getOffsetHeight(el) + getElementTop(el) - getElementTop(container)
     const offsetHeight = getOffsetHeight(container)
-    const borderBottom = Number.parseFloat(getStyleComputedProperty(container, 'borderBottomWidth'))
+    const borderBottom = Number.parseFloat(
+      getStyleComputedProperty(container, 'borderBottomWidth')
+    )
     shouldTrigger = heightBelowTop - offsetHeight + borderBottom <= distance
   }
 
   if (shouldTrigger && isFunction(cb)) {
     cb.call(vm)
-  }
-  else if (observer) {
+  } else if (observer) {
     observer.disconnect()
     this[scope].observer = null
   }
@@ -190,7 +192,7 @@ export default {
       container.addEventListener('scroll', onScroll)
 
       if (immediate) {
-        const observer = el[scope].observer = new MutationObserver(onScroll)
+        const observer = (el[scope].observer = new MutationObserver(onScroll))
         observer.observe(container, { childList: true, subtree: true })
         onScroll()
       }
@@ -198,7 +200,6 @@ export default {
   },
   unbind(el) {
     const { container, onScroll } = el[scope]
-    if (container)
-      container.removeEventListener('scroll', onScroll)
-  },
+    if (container) container.removeEventListener('scroll', onScroll)
+  }
 }
