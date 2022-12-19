@@ -1,7 +1,4 @@
 /** @type {import('eslint').Linter.Config} */
 module.exports = {
-  extends: '@antfu',
-  rules: {
-    '@typescript-eslint/ban-ts-comment': 0,
-  },
+  extends: ['plugin:vue/vue3-recommended', '@icebreakers/eslint-config-ts']
 }
