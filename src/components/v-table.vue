@@ -346,8 +346,9 @@ async function onContainerScroll(payload: UIEvent) {
     // be aware of difference between clientHeight & offsetHeight & window.getComputedStyle().height
     const scrollBottom = target.scrollTop + target.clientHeight
     shouldTrigger = target.scrollHeight - scrollBottom <= 0
+    // console.log(target.scrollHeight,scrollBottom,target.scrollTop,target.clientHeight)
     // console.log(target.scrollTop, target.clientHeight, target.scrollHeight)
-    if (shouldTrigger && !scrollToBottomLoading.value) {
+    if (target.scrollTop && shouldTrigger && !scrollToBottomLoading.value) {
       try {
         scrollToBottomLoading.value = true
         await onScrollToBottom?.value?.({

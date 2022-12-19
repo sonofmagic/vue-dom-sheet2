@@ -15,7 +15,7 @@ const page = ref(0)
 const { columns, dataSource, transform } = useDataSource(() => {
   const columns = []
 
-  const columnsLength = 1
+  const columnsLength = 32
   const firstDay = dayjs().startOf('M')
   for (let i = 0; i < columnsLength; i++) {
     columns.push({
@@ -36,9 +36,9 @@ const { columns, dataSource, transform } = useDataSource(() => {
 let mockData
 onBeforeMount(async () => {
   const { data } = await import('./mock.json')
-  mockData = data
-  for (let i = 0; i < 2; i++) {
-    dataSource.value.push(...transform(data.map((x, j) => {
+  mockData = data.slice(0,1)
+  for (let i = 0; i < 1; i++) {
+    dataSource.value.push(...transform(mockData.map((x, j) => {
       return {
         ...x,
         personId: x.personId + i + j,
