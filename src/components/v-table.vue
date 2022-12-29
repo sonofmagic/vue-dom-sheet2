@@ -428,6 +428,7 @@ onKeyStroke('Delete', (event) => {
 defineExpose({
   selectColumn,
   selectRow,
+  selectedCellSet: selectedCellSet.value
 })
 
 provide(
@@ -465,8 +466,8 @@ provide(
       </template>
       <template #colgroup>
         <col v-for="col in columns" :key="col.key" :style="{
-          'min-width': `${col.width}px`,
-        }" :width="col.width">
+  'min-width': `${col.width}px`,
+}" :width="col.width">
       </template>
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />

@@ -285,6 +285,10 @@ provide(yAxisSymbol, {
     sheetRef.value?.selectRow(idx, Boolean(v))
   },
 })
+
+function getSelectedCellSet(){
+  console.log(sheetRef.value?.selectedCellSet) 
+}
 </script>
 
 <template>
@@ -293,7 +297,7 @@ provide(yAxisSymbol, {
       <Splitpanes>
         <Pane class="min-w-[200px] w-[200px] mr-2" size="0">
           <div class="h-full flex-shrink-0 w-full flex flex-col overflow-hidden">
-            <div class="text-lg p-2 h-[48px] flex-shrink-0">
+            <div class="text-lg p-2 h-[48px] flex-shrink-0" @click="getSelectedCellSet">
               Excel
             </div>
             <VirtualList
