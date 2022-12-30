@@ -490,7 +490,7 @@ provide(
 .vue-dom-sheet-wrapper {
   --color-virtual-table-head-cell-border: #EEF0F4;
   @apply relative flex;
-
+  // padding: 10px;
   .ps__rail-x,
   .ps__rail-y {
     z-index: 2;
@@ -498,6 +498,7 @@ provide(
 
   .vue-dom-sheet-virtual-table {
     @apply w-auto table-fixed border-collapse text-center bg-white;
+
 
     .vue-dom-sheet-virtual-table-head {
       @apply sticky top-0 left-0 z-[1];
@@ -511,6 +512,10 @@ provide(
 
   .vue-dom-sheet-virtual-list {
     @apply relative w-full;
+    padding-left: 1px;
+    padding-bottom: 2px;
+    // margin-right: 20px;
+    // padding-right: 1px;
   }
 
 }

@@ -11,7 +11,7 @@ specifiers:
   '@vueuse/core': ^9.9.0
   add: ^2.0.6
   autoprefixer: ^10.4.13
-  core-js: ^3.27.0
+  core-js: ^3.27.1
   dayjs: ^1.11.7
   element-ui: ^2.15.12
   eslint: ^8.30.0
@@ -54,7 +54,7 @@ devDependencies:
   '@vueuse/core': 9.9.0_xpaeqr4pwmwbonupufe3t5rnda
   add: 2.0.6
   autoprefixer: 10.4.13_postcss@8.4.20
-  core-js: 3.27.0
+  core-js: 3.27.1
   dayjs: 1.11.7
   element-ui: 2.15.12_vue@2.7.14
   eslint: 8.30.0
@@ -1616,8 +1616,8 @@ packages:
     requiresBuild: true
     dev: true
 
-  /core-js/3.27.0:
-    resolution: {integrity: sha512-wY6cKosevs430KRkHUIsvepDXHGjlXOZO3hYXNyqpD6JvB0X28aXyv0t1Y1vZMwE7SoKmtfa6IASHCPN52FwBQ==}
+  /core-js/3.27.1:
+    resolution: {integrity: sha512-GutwJLBChfGCpwwhbYoqfv03LAfmiz7e7D/BNxzeMxwQf10GRSzqiOjx7AmtEk+heiD/JWmBuyBPgFtx0Sg1ww==}
     requiresBuild: true
     dev: true
 
