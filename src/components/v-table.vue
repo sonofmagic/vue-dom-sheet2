@@ -374,11 +374,12 @@ async function onContainerScroll(e: Event) {
 
 function onDrop(e: DragEvent, attrs: ICellAttrs) {
   // console.log('onDrop', e, attrs)
-  const result = onCellDrop?.value?.(dragCellAttrs.value!, attrs)
-  if (result !== false) {
-    if (dragCellAttrs.value)
-      attrs.item.value = cloneDeep(dragCellAttrs.value.item.value)
-  }
+  onCellDrop?.value?.(dragCellAttrs.value!, attrs)
+  // const result = 
+  // if (result !== false) {
+  //   if (dragCellAttrs.value)
+  //     attrs.item.value = cloneDeep(dragCellAttrs.value.item.value)
+  // }
 }
 
 function onDragstart(e: DragEvent, attrs: ICellAttrs) {
@@ -466,8 +467,8 @@ provide(
       </template>
       <template #colgroup>
         <col v-for="col in columns" :key="col.key" :style="{
-  'min-width': `${col.width}px`,
-}" :width="col.width">
+          'min-width': `${col.width}px`,
+        }" :width="col.width">
       </template>
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />
@@ -490,6 +491,7 @@ provide(
 .vue-dom-sheet-wrapper {
   --color-virtual-table-head-cell-border: #EEF0F4;
   @apply relative flex;
+
   // padding: 10px;
   .ps__rail-x,
   .ps__rail-y {

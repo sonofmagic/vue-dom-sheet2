@@ -37,7 +37,7 @@ let mockData
 onBeforeMount(async () => {
   const { data } = await import('./mock.json')
   mockData = data //.slice(0,1)
-  for (let i = 0; i < 1; i++) {
+  for (let i = 0; i < 2; i++) {
     dataSource.value.push(...transform(mockData.map((x, j) => {
       return {
         ...x,
