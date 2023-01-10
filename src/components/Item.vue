@@ -4,79 +4,83 @@ import { inject, toRefs } from 'vue-demi'
 import type { IDataSourceRow } from './types'
 import type { ICellEvents } from './contexts/CellEvents'
 import { CellEventsSymbol } from './contexts/CellEvents'
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   // rowIndex
   index: number
-  source: IDataSourceRow
-}>()
+  source: IDataSourceRow,
+  attrs?: Record<string, string>
+  listeners?: { [key: string]: Function | Array<Function> }
+}>(), {
+
+})
 
 const events = inject(CellEventsSymbol, {})
 const { contextmenu, dblclick, mousedown, mouseenter, mouseleave, mousemove, mouseup, drag, drop, dragstart, dragend } = (events ?? {}) as Required<ICellEvents>
 
-const { index: rowIndex, source } = toRefs(props)
+const { index: rowIndex, source, attrs, listeners } = toRefs(props)
 </script>
 
 <template>
   <Fragment>
-    <td
-      v-for="(item, colIndex) in source.cells" :key="item.id" data-sheet-cell="1" class="vue-dom-sheet-cell"
-      :class="[item.selected ? 'selected' : undefined, item.disabled ? 'disabled' : undefined]" @contextmenu.prevent="
+    <td v-for="(item, colIndex) in source.cells" :key="item.id" data-sheet-cell="1" class="vue-dom-sheet-cell"
+      :class="[item.selected ? 'selected' : undefined, item.disabled ? 'disabled' : undefined]" v-bind="attrs"
+      v-on="listeners" @contextmenu.prevent="
         contextmenu($event, {
           rowIndex,
           colIndex,
           item,
         })
       " @mousedown="
-        mousedown($event, {
-          rowIndex,
-          colIndex,
-          item,
-        })
-      " @mouseup="
-        mouseup($event, {
-          rowIndex,
-          colIndex,
-          item,
-        })
-      " @mousemove="
-        mousemove($event, {
-          rowIndex,
-          colIndex,
-          item,
-        })
-      " @dblclick="
-        dblclick($event, {
-          rowIndex,
-          colIndex,
-          item,
-        })
-      " @mouseleave="
-        mouseleave($event, {
-          rowIndex,
-          colIndex,
-          item,
-        })
-      " @mouseenter="
-        mouseenter($event, {
-          rowIndex,
-          colIndex,
-          item,
-        })
-      " @drop="drop($event, {
-        rowIndex,
-        colIndex,
-        item,
-      })" @dragstart="dragstart($event, {
-        rowIndex,
-        colIndex,
-        item,
-      })" @dragend="dragend($event, {
-        rowIndex,
-        colIndex,
-        item,
-      })" @dragover.prevent
-    >
-      <slot class="sheet-cell-inner" :item="item" :col-index="colIndex" :row-index="rowIndex" :source="source" />
+  mousedown($event, {
+    rowIndex,
+    colIndex,
+    item,
+  })
+" @mouseup="
+  mouseup($event, {
+    rowIndex,
+    colIndex,
+    item,
+  })
+" @mousemove="
+  mousemove($event, {
+    rowIndex,
+    colIndex,
+    item,
+  })
+" @dblclick="
+  dblclick($event, {
+    rowIndex,
+    colIndex,
+    item,
+  })
+" @mouseleave="
+  mouseleave($event, {
+    rowIndex,
+    colIndex,
+    item,
+  })
+" @mouseenter="
+  mouseenter($event, {
+    rowIndex,
+    colIndex,
+    item,
+  })
+" @drop="drop($event, {
+  rowIndex,
+  colIndex,
+  item,
+})" @dragstart="dragstart($event, {
+  rowIndex,
+  colIndex,
+  item,
+})" @dragend="dragend($event, {
+  rowIndex,
+  colIndex,
+  item,
+})" @dragover.prevent>
+      <slot class="sheet-cell-inner" :item="item" :col-index="colIndex" :row-index="rowIndex" :source="source"
+        :attrs="attrs" :listeners="listeners" />
     </td>
   </Fragment>
 </template>

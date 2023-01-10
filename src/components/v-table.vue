@@ -13,7 +13,7 @@ import type { ICellAttrs, IColumn, IDataSourceItem, IDataSourceRow, IScrollOffse
 import { CellEventsSymbol } from './contexts/CellEvents'
 // import { vScrollbar } from './directives'
 import 'perfect-scrollbar/css/perfect-scrollbar.css'
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   dataSource: IDataSourceRow[]
   columns: IColumn[]
   itemComponent: Function | Object
@@ -25,7 +25,11 @@ const props = defineProps<{
   onCellDrop?: (sourceAttrs: ICellAttrs, targetAttrs: ICellAttrs) => boolean | undefined
   onCellDragstart?: () => boolean | undefined
   onCellDragend?: () => boolean | undefined
-}>()
+  cellExtraProps?: Record<string, unknown>
+  debug?: boolean
+}>(), {
+  debug: false
+})
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
   // (e: 'scrolltobottom'): void
@@ -33,7 +37,7 @@ const emit = defineEmits<{
   // (e: 'scrolltotop'): void
   // (e: 'scrolltoleft'): void
 }>()
-const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp, onValueSelector, onKeyStrokeDelete, onCellDragend, onCellDragstart, onCellDrop } = toRefs(props)
+const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp, onValueSelector, onKeyStrokeDelete, onCellDragend, onCellDragstart, onCellDrop, debug, cellExtraProps } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
 const { x: windowX, y: windowY } = useWindowScroll()
@@ -169,8 +173,10 @@ function setMoveStyle(rect: DOMRect) {
   else {
     selectionReset('y')
   }
-  // @ts-expect-error
-  console.log(offsetX, offsetY, getDirection([offsetX, offsetY]))
+  if (debug.value) {
+    console.log(offsetX, offsetY, getDirection([offsetX, offsetY]))
+  }
+
 }
 
 function getTdElement(e: MouseEvent) {
@@ -454,7 +460,7 @@ provide(
   <div ref="wrapperRef" class="vue-dom-sheet-wrapper">
     <VirtualList ref="containerRef" table table-class="vue-dom-sheet-virtual-table" class="vue-dom-sheet-virtual-list"
       data-key="key" :data-sources="dataSource" :data-component="itemComponent" :item-scoped-slots="itemScopedSlots"
-      item-tag="tr" @scroll.passive="onContainerScroll">
+      item-tag="tr" @scroll.passive="onContainerScroll" :extra-props="cellExtraProps">
       <template #thead>
         <thead class="vue-dom-sheet-virtual-table-head">
           <tr>
@@ -477,10 +483,12 @@ provide(
             :menu-context="menuContext" />
         </ContextMenu>
         <Popover :context="valueSelectorContext" placement="bottom-start">
-          <slot name="value-selector" :attrs="dblclickCellAttrs" />
+          <slot name="value-selector" :attrs="dblclickCellAttrs" :visible="valueSelectorContext.visible.value"
+            :popover-context="valueSelectorContext" />
         </Popover>
         <Popover :context="showDetailContext" placement="bottom-start">
-          <slot name="detail" :attrs="detailCellAttrs" />
+          <slot name="detail" :attrs="detailCellAttrs" :visible="showDetailContext.visible.value"
+            :popover-context="showDetailContext" />
         </Popover>
       </template>
     </VirtualList>
