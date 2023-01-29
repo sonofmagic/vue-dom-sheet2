@@ -1,9 +1,8 @@
-<!-- eslint-disable no-new -->
 <script lang="ts" setup>
 import { nextTick, onMounted, provide, reactive, ref, shallowRef, toRefs } from 'vue-demi'
 import { cloneDeep, forEach, throttle } from 'lodash-es'
 import type { MaybeElement } from '@vueuse/core'
-import { onKeyStroke, unrefElement, useWindowScroll } from '@vueuse/core'
+import { onKeyStroke, unrefElement, useScroll } from '@vueuse/core'
 import PerfectScrollbar from 'perfect-scrollbar'
 import type { IContextMenuContext } from './components'
 import { ContextMenu, Popover, Selection, VirtualList, useContextMenu, usePopover, useSelection } from './components'
@@ -26,9 +25,11 @@ const props = withDefaults(defineProps<{
   onCellDragstart?: () => boolean | undefined
   onCellDragend?: () => boolean | undefined
   cellExtraProps?: Record<string, unknown>
-  debug?: boolean
+  debug?: boolean,
+  onContextMenuPreventDefault?: boolean
 }>(), {
-  debug: false
+  debug: false,
+  onContextMenuPreventDefault: true
 })
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
@@ -37,10 +38,10 @@ const emit = defineEmits<{
   // (e: 'scrolltotop'): void
   // (e: 'scrolltoleft'): void
 }>()
-const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp, onValueSelector, onKeyStrokeDelete, onCellDragend, onCellDragstart, onCellDrop, debug, cellExtraProps } = toRefs(props)
+const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp, onContextMenuPreventDefault, onValueSelector, onKeyStrokeDelete, onCellDragend, onCellDragstart, onCellDrop, debug, cellExtraProps } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
-const { x: windowX, y: windowY } = useWindowScroll()
+const { x: windowX, y: windowY } = useScroll(window)
 const { shiftState, controlState } = useKeyBoard()
 
 const { context: menuContext } = useContextMenu()
@@ -95,16 +96,23 @@ const detailCellAttrs = ref<ICellAttrs>()
 const dragCellAttrs = ref<ICellAttrs>()
 
 async function onContextmenu(e: MouseEvent, attrs: ICellAttrs) {
-  e.preventDefault()
+  if (onContextMenuPreventDefault.value) {
+    e.preventDefault()
+  }
+
 
   const res = await onContextMenuFromProp?.value?.({
     selectedCellSet: selectedCellSet.value,
     menuContext,
   })
-  if (res === false)
+  if (res === false) {
     return
-  if (typeof res === 'object')
+  }
+
+  if (typeof res === 'object') {
     contextMenuAttrs.value = res
+  }
+
 
   // if (typeof res === 'undefined' || res === true) {
 

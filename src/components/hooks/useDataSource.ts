@@ -21,12 +21,20 @@ interface IWrapDataResponse {
   children?: string
 }
 
-function noop(x: unknown) { return x }
+function noop(x: unknown) {
+  return x
+}
 
-function createTransformMethod(res: IWrapDataResponse, dataSourceRef: Ref<IDataSourceRow<unknown>[]>) {
+function createTransformMethod(
+  res: IWrapDataResponse,
+  dataSourceRef: Ref<IDataSourceRow<unknown>[]>
+) {
   const { childKey, children = 'children', columns, rowKey } = res
 
-  return function transform(rows: IRow[], eachRow?: (item: IDataSourceRow, index: number) => void) {
+  return function transform(
+    rows: IRow[],
+    eachRow?: (item: IDataSourceRow, index: number) => void
+  ) {
     const columnsLength = columns.length
     const data: IDataSourceRow[] = []
     for (let i = 0; i < rows.length; i++) {
@@ -39,8 +47,9 @@ function createTransformMethod(res: IWrapDataResponse, dataSourceRef: Ref<IDataS
         const x = j
         let id = `${y}-${x}`
         // console.log(i, dataSourceRef.value.length)
-        if (childKey && value)
+        if (childKey && value) {
           id = value[childKey]
+        }
 
         const td: IDataSourceItem = {
           value, // `${i}-${j}`,
@@ -51,7 +60,7 @@ function createTransformMethod(res: IWrapDataResponse, dataSourceRef: Ref<IDataS
           editing: false,
           locked: false,
           x,
-          y,
+          y
         }
 
         tr.push(td)
@@ -59,7 +68,7 @@ function createTransformMethod(res: IWrapDataResponse, dataSourceRef: Ref<IDataS
       const item: IDataSourceRow = {
         cells: tr,
         key,
-        row,
+        row
       }
       eachRow?.(item, i)
       data.push(item)
@@ -68,7 +77,9 @@ function createTransformMethod(res: IWrapDataResponse, dataSourceRef: Ref<IDataS
   }
 }
 
-export default function useDataSource(fn: (...args: any[]) => IWrapDataResponse) {
+export default function useDataSource(
+  fn: (...args: any[]) => IWrapDataResponse
+) {
   const dataSetSource: IDataSourceRow[] = []
   const dataSource = ref(dataSetSource)
   const columns = ref<IColumn[]>([])
@@ -82,16 +93,19 @@ export default function useDataSource(fn: (...args: any[]) => IWrapDataResponse)
   }
 
   watch(columns, (nv) => {
-    transform = createTransformMethod({
-      ...config,
-      columns: nv,
-    }, dataSource)
+    transform = createTransformMethod(
+      {
+        ...config,
+        columns: nv
+      },
+      dataSource
+    )
   })
 
   return {
     columns,
     dataSource,
-    transform,
+    transform
     // rows,
   }
 }

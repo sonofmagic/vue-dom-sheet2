@@ -289,6 +289,14 @@ provide(yAxisSymbol, {
 function getSelectedCellSet() {
   console.log(sheetRef.value?.selectedCellSet)
 }
+
+function getCellAttrs(row, idx) {
+  if (row.cells[idx].disabled) {
+    return { title: '222' }
+  } else {
+    return
+  }
+}
 </script>
 
 <template>
@@ -338,7 +346,7 @@ function getSelectedCellSet() {
             :data-source="dataSource" :item-component="SheetCell" :on-scroll-to-bottom="onScroll2Bottom"
             :on-context-menu="onContextMenu" :on-value-selector="onValueSelector"
             :on-key-stroke-delete="onKeyStrokeDelete" :on-cell-drop="onCellDrop" @scroll="syncScroll"
-            :cell-extra-props="{ attrs: { title: '111' } }">
+            :cell-extra-props="{ attrs: getCellAttrs }" :onContextMenuPreventDefault="false">
             <template #context-menu="ctx">
               <div class="border bg-white">
                 <div class="w-32 text-center">
