@@ -180,8 +180,8 @@ function setMoveStyle(rect: DOMRect) {
 }
 
 function getTdElement(e: MouseEvent) {
-  // @ts-expect-error
-  const path = e.path as Element[]
+  // @ts-ignore
+  const path = (e.composedPath && e.composedPath()) || e.path
   if (Array.isArray(path)) {
     for (let i = 0; i < path.length; i++) {
       const element = path[i]
@@ -198,6 +198,7 @@ function getTdElement(e: MouseEvent) {
 // https://developer.mozilla.org/zh-CN/docs/Web/API/MouseEvent/buttons
 function onMousedown(e: MouseEvent, attrs: ICellAttrs) {
   const target = getTdElement(e)
+
   // console.log('onMousedown', e)
 
   if (e.buttons === 1 && e.button === 0 && target) {
@@ -210,8 +211,10 @@ function onMousedown(e: MouseEvent, attrs: ICellAttrs) {
       }
       return
     }
-    if (!controlState.value)
+    if (!controlState.value) {
       resetDataSetSelected()
+    }
+
     // forEach(currentSelectionValues.value, x => {
     //   x.selected = true
     // })
