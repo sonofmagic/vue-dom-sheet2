@@ -290,10 +290,12 @@ function getSelectedCellSet() {
   console.log(sheetRef.value?.selectedCellSet)
 }
 
-function getCellAttrs(row, idx) {
-  if (row.cells[idx].disabled) {
+function getCellAttrs(item, colIndex, source, rowIndex) {
+  // console.log(item, colIndex, source, rowIndex)
+  if (!item.value) {
     return { title: '222' }
   } else {
+
     return
   }
 }

@@ -8,7 +8,7 @@ const props = withDefaults(defineProps<{
   // rowIndex
   index: number
   source: IDataSourceRow,
-  attrs?: Record<string, string> | ((item: IDataSourceRow<unknown>, rowIndex: number) => Record<string, string>)
+  attrs?: Record<string, string> | ((item: IDataSourceItem<unknown>, colIndex: number, source: IDataSourceRow<unknown>, rowIndex: number,) => Record<string, string>)
   listeners?: { [key: string]: Function | Array<Function> }
 }>(), {
 
@@ -20,15 +20,17 @@ const { contextmenu, dblclick, mousedown, mouseenter, mouseleave, mousemove, mou
 const { index: rowIndex, source, attrs, listeners } = toRefs(props)
 
 const currentAttrs = computed(() => {
-  return typeof attrs?.value === 'function' ? attrs?.value(source.value, rowIndex.value) : attrs?.value
+  return typeof attrs?.value === 'function' ?
+    (item: IDataSourceItem<unknown>, colIndex: number) => attrs?.value(item, colIndex, source.value, rowIndex.value, colIndex)
+    : (...args: any[]) => attrs?.value
 })
 </script>
 
 <template>
   <Fragment>
     <td v-for="(item, colIndex) in source.cells" :key="item.id" data-sheet-cell="1" class="vue-dom-sheet-cell"
-      :class="[item.selected ? 'selected' : undefined, item.disabled ? 'disabled' : undefined]" v-bind="currentAttrs"
-      v-on="listeners" @contextmenu="
+      :class="[item.selected ? 'selected' : undefined, item.disabled ? 'disabled' : undefined]"
+      v-bind="currentAttrs(item, colIndex)" v-on="listeners" @contextmenu="
         contextmenu($event, {
           rowIndex,
           colIndex,
