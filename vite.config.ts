@@ -4,6 +4,7 @@ import vue from '@vitejs/plugin-vue2'
 import vueJsx from '@vitejs/plugin-vue2-jsx'
 import { visualizer } from 'rollup-plugin-visualizer'
 import dts from 'vite-plugin-dts'
+import DefineOptions from 'unplugin-vue-define-options/vite'
 // import Components from 'unplugin-vue-components/vite'
 // // import Icons from 'unplugin-icons/vite'
 // import IconsResolver from 'unplugin-icons/resolver'
@@ -12,14 +13,15 @@ import dts from 'vite-plugin-dts'
 const config = defineConfig({
   resolve: {
     alias: {
-      '@': `${path.resolve(__dirname, 'src')}`,
-    },
+      '@': `${path.resolve(__dirname, 'src')}`
+    }
   },
 
   plugins: [
     vue(),
     vueJsx(),
     dts(),
+    DefineOptions()
     // Components({
     //   resolvers: [
     //     IconsResolver({
@@ -35,10 +37,10 @@ const config = defineConfig({
     // }),
   ],
   optimizeDeps: {
-    exclude: ['vue-demi'],
+    exclude: ['vue-demi']
   },
   server: {
-    port: 3333,
+    port: 3333
   },
 
   build: {
@@ -48,7 +50,7 @@ const config = defineConfig({
       entry: path.resolve(__dirname, './src/components/exports.ts'),
       name: 'vue-dom-sheet',
       // the proper extensions will be added
-      fileName: 'vue-dom-sheet',
+      fileName: 'vue-dom-sheet'
     },
 
     rollupOptions: {
@@ -58,12 +60,12 @@ const config = defineConfig({
         dir: path.resolve(__dirname, 'dist'),
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
-          vue: 'Vue',
+          vue: 'Vue'
         },
-        plugins: [visualizer()],
-      },
-    },
-  },
+        plugins: [visualizer()]
+      }
+    }
+  }
 })
 
 export default config

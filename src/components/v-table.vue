@@ -1,36 +1,87 @@
 <script lang="ts" setup>
-import { nextTick, onMounted, provide, reactive, ref, shallowRef, toRefs } from 'vue-demi'
-import { cloneDeep, forEach, throttle } from 'lodash-es'
+import { onMounted, provide, reactive, ref, shallowRef, toRefs } from 'vue-demi'
+import { forEach, throttle } from 'lodash-es'
 import type { MaybeElement } from '@vueuse/core'
 import { onKeyStroke, unrefElement, useScroll } from '@vueuse/core'
 import PerfectScrollbar from 'perfect-scrollbar'
 import type { IContextMenuContext } from './components'
-import { ContextMenu, Popover, Selection, VirtualList, useContextMenu, usePopover, useSelection } from './components'
+import {
+  ContextMenu,
+  Popover,
+  Selection,
+  VirtualList,
+  useContextMenu,
+  usePopover,
+  useSelection
+} from './components'
 import { useContainer, useKeyBoard } from './hooks'
 import { getBoundingClientRect, getDirection } from './utils'
-import type { ICellAttrs, IColumn, IDataSourceItem, IDataSourceRow, IScrollOffset } from './types'
+import type {
+  ICellAttrs,
+  IColumn,
+  IDataSourceItem,
+  IDataSourceRow,
+  IScrollOffset
+} from './types'
 import { CellEventsSymbol } from './contexts/CellEvents'
 // import { vScrollbar } from './directives'
 import 'perfect-scrollbar/css/perfect-scrollbar.css'
-const props = withDefaults(defineProps<{
-  dataSource: IDataSourceRow[]
-  columns: IColumn[]
-  itemComponent: Function | Object
-  itemScopedSlots?: Record<string, unknown>
-  onScrollToBottom?: ({ xAxisScrollbar, yAxisScrollbar }: { xAxisScrollbar: PerfectScrollbar; yAxisScrollbar: PerfectScrollbar }) => Promise<unknown> | unknown
-  onContextMenu?: ({ selectedCellSet, menuContext }: { selectedCellSet: Set<IDataSourceItem<unknown>>; menuContext: IContextMenuContext }) => Record<string, any> | Boolean | Promise<Record<string, any> | Boolean>
-  onValueSelector?: ({ attrs }: { attrs: ICellAttrs }) => Promise<boolean> | boolean
-  onKeyStrokeDelete?: ({ selectedCellSet, event }: { selectedCellSet: Set<IDataSourceItem<unknown>>; event: KeyboardEvent }) => Promise<boolean> | boolean
-  onCellDrop?: (sourceAttrs: ICellAttrs, targetAttrs: ICellAttrs) => boolean | undefined
-  onCellDragstart?: () => boolean | undefined
-  onCellDragend?: () => boolean | undefined
-  cellExtraProps?: Record<string, unknown>
-  debug?: boolean,
-  onContextMenuPreventDefault?: boolean
-}>(), {
-  debug: false,
-  onContextMenuPreventDefault: true
-})
+const props = withDefaults(
+  defineProps<{
+    dataSource: IDataSourceRow[]
+    columns: IColumn[]
+    itemComponent: Function | Object
+    itemScopedSlots?: Record<string, unknown>
+    onScrollToBottom?: ({
+      xAxisScrollbar,
+      yAxisScrollbar
+    }: {
+      xAxisScrollbar: PerfectScrollbar
+      yAxisScrollbar: PerfectScrollbar
+    }) => Promise<unknown> | unknown
+    onContextMenu?: ({
+      selectedCellSet,
+      menuContext
+    }: {
+      selectedCellSet: Set<IDataSourceItem<unknown>>
+      menuContext: IContextMenuContext
+    }) => Record<string, any> | Boolean | Promise<Record<string, any> | Boolean>
+    onValueSelector?: ({
+      attrs
+    }: {
+      attrs: ICellAttrs
+    }) => Promise<boolean> | boolean
+    onKeyStrokeDelete?: ({
+      selectedCellSet,
+      event
+    }: {
+      selectedCellSet: Set<IDataSourceItem<unknown>>
+      event: KeyboardEvent
+    }) => Promise<boolean> | boolean
+    onCellDrop?: (
+      sourceAttrs: ICellAttrs,
+      targetAttrs: ICellAttrs
+    ) => boolean | undefined
+    onCellDragstart?: () => boolean | undefined
+    onCellDragend?: () => boolean | undefined
+    cellExtraProps?: Record<string, unknown>
+    debug?: boolean
+    onContextMenuPreventDefault?: boolean
+  }>(),
+  {
+    debug: false,
+    onContextMenuPreventDefault: true,
+    itemScopedSlots: undefined,
+    onScrollToBottom: undefined,
+    onContextMenu: undefined,
+    onValueSelector: undefined,
+    onKeyStrokeDelete: undefined,
+    onCellDrop: undefined,
+    onCellDragstart: undefined,
+    onCellDragend: undefined,
+    cellExtraProps: undefined
+  }
+)
 const emit = defineEmits<{
   (e: 'scroll', payload: IScrollOffset): void
   // (e: 'scrolltobottom'): void
@@ -38,7 +89,22 @@ const emit = defineEmits<{
   // (e: 'scrolltotop'): void
   // (e: 'scrolltoleft'): void
 }>()
-const { columns, dataSource, itemComponent, itemScopedSlots, onScrollToBottom, onContextMenu: onContextMenuFromProp, onContextMenuPreventDefault, onValueSelector, onKeyStrokeDelete, onCellDragend, onCellDragstart, onCellDrop, debug, cellExtraProps } = toRefs(props)
+const {
+  columns,
+  dataSource,
+  itemComponent,
+  itemScopedSlots,
+  onScrollToBottom,
+  onContextMenu: onContextMenuFromProp,
+  onContextMenuPreventDefault,
+  onValueSelector,
+  onKeyStrokeDelete,
+  onCellDragend,
+  onCellDragstart,
+  onCellDrop,
+  debug,
+  cellExtraProps
+} = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
 const { x: windowX, y: windowY } = useScroll(window)
@@ -49,15 +115,24 @@ const containerRef = shallowRef<MaybeElement>()
 const wrapperRef = shallowRef<MaybeElement>()
 const yAxisScrollbar = shallowRef<PerfectScrollbar>()
 const xAxisScrollbar = shallowRef<PerfectScrollbar>()
-const { left: containerLeft, top: containerTop, scrollX: containerScrollX, scrollY: containerScrollY } = useContainer(containerRef)
+const {
+  left: containerLeft,
+  top: containerTop,
+  scrollX: containerScrollX,
+  scrollY: containerScrollY
+} = useContainer(containerRef)
 onMounted(() => {
   // console.log(containerRef.value, wrapperRef.value)
   // nextTick(() => {
   // 上下滚
-  yAxisScrollbar.value = new PerfectScrollbar(unrefElement(containerRef.value) as Element)
+  yAxisScrollbar.value = new PerfectScrollbar(
+    unrefElement(containerRef.value) as Element
+  )
 
   // 左右滚
-  xAxisScrollbar.value = new PerfectScrollbar(unrefElement(wrapperRef.value) as Element)
+  xAxisScrollbar.value = new PerfectScrollbar(
+    unrefElement(wrapperRef.value) as Element
+  )
   yAxisScrollbar.value.update()
   xAxisScrollbar.value.update()
   // })
@@ -73,18 +148,18 @@ const {
   assign: selectionAssign,
   reset: selectionReset,
   selectionStyle,
-  context: selectionContext,
+  context: selectionContext
 } = useSelection({
   container: {
     left: containerLeft,
     scrollX: containerScrollX,
     scrollY: containerScrollY,
-    top: containerTop,
+    top: containerTop
   },
   window: {
     scrollX: windowX,
-    scrollY: windowY,
-  },
+    scrollY: windowY
+  }
 })
 
 const currentSelectionValues = ref<IDataSourceItem[]>()
@@ -100,10 +175,9 @@ async function onContextmenu(e: MouseEvent, attrs: ICellAttrs) {
     e.preventDefault()
   }
 
-
   const res = await onContextMenuFromProp?.value?.({
     selectedCellSet: selectedCellSet.value,
-    menuContext,
+    menuContext
   })
   if (res === false) {
     return
@@ -112,7 +186,6 @@ async function onContextmenu(e: MouseEvent, attrs: ICellAttrs) {
   if (typeof res === 'object') {
     contextMenuAttrs.value = res
   }
-
 
   // if (typeof res === 'undefined' || res === true) {
 
@@ -123,21 +196,29 @@ async function onContextmenu(e: MouseEvent, attrs: ICellAttrs) {
       x: rect.left,
       y: rect.top,
       width: rect.width,
-      height: rect.height,
+      height: rect.height
     })
-  }
-  else {
+  } else {
     menuContext.show({
       x: e.x,
-      y: e.y,
+      y: e.y
     })
   }
 }
-function getCurrentSelectionValues(start: ICellAttrs, end: ICellAttrs): IDataSourceItem[] {
+function getCurrentSelectionValues(
+  start: ICellAttrs,
+  end: ICellAttrs
+): IDataSourceItem[] {
   const { colIndex: startcolIndex, rowIndex: startrowIndex } = start
   const { colIndex: endcolIndex, rowIndex: endrowIndex } = end
-  const rows = [Math.min(startrowIndex, endrowIndex), Math.max(startrowIndex, endrowIndex) + 1]
-  const cols = [Math.min(startcolIndex, endcolIndex), Math.max(startcolIndex, endcolIndex) + 1]
+  const rows = [
+    Math.min(startrowIndex, endrowIndex),
+    Math.max(startrowIndex, endrowIndex) + 1
+  ]
+  const cols = [
+    Math.min(startcolIndex, endcolIndex),
+    Math.max(startcolIndex, endcolIndex) + 1
+  ]
   const values = dataSource.value.slice(...rows).map((x) => {
     return x.cells.slice(...cols)
   })
@@ -153,38 +234,37 @@ function setMoveStyle(rect: DOMRect) {
 
   if (offsetX > 0) {
     // 右
-    selectionPosition.value.right = rect.right + containerScrollX.value + windowX.value // - containerLeft.value
+    selectionPosition.value.right =
+      rect.right + containerScrollX.value + windowX.value // - containerLeft.value
     selectionPosition.value.width = Math.abs(offsetX) + rect.width
-  }
-  else if (offsetX < 0) {
+  } else if (offsetX < 0) {
     // 左
-    selectionPosition.value.left = rect.left + containerScrollX.value - containerLeft.value
+    selectionPosition.value.left =
+      rect.left + containerScrollX.value - containerLeft.value
     selectionPosition.value.width = Math.abs(offsetX) + rect.width
-  }
-  else {
+  } else {
     selectionReset('x')
   }
 
   // console.log(rect.top, selectionPosition.value.top)
   if (offsetY > 0) {
     // 下
-    selectionPosition.value.bottom = rect.bottom + containerScrollY.value + windowY.value // - containerTop.value
+    selectionPosition.value.bottom =
+      rect.bottom + containerScrollY.value + windowY.value // - containerTop.value
     selectionPosition.value.height = Math.abs(offsetY) + rect.height
-  }
-  else if (offsetY < 0) {
+  } else if (offsetY < 0) {
     // 上
     //  - containerTop.value
     // console.log(containerTop.value, windowY.value)
-    selectionPosition.value.top = rect.top + containerScrollY.value - containerTop.value
+    selectionPosition.value.top =
+      rect.top + containerScrollY.value - containerTop.value
     selectionPosition.value.height = Math.abs(offsetY) + rect.height
-  }
-  else {
+  } else {
     selectionReset('y')
   }
   if (debug.value) {
     console.log(offsetX, offsetY, getDirection([offsetX, offsetY]))
   }
-
 }
 
 function getTdElement(e: MouseEvent) {
@@ -198,8 +278,7 @@ function getTdElement(e: MouseEvent) {
         return element
     }
     return null
-  }
-  else {
+  } else {
     return null
   }
 }
@@ -230,8 +309,7 @@ function onMousedown(e: MouseEvent, attrs: ICellAttrs) {
     startEventTarget.value = target
     const rect = getBoundingClientRect(startEventTarget.value)
     // 设置开始拖动
-    if (controlState.value)
-      startSelection.value = true
+    if (controlState.value) startSelection.value = true
 
     const computedRect = {
       left: rect.left + containerScrollX.value - containerLeft.value,
@@ -239,7 +317,7 @@ function onMousedown(e: MouseEvent, attrs: ICellAttrs) {
       top: rect.top + containerScrollY.value - containerTop.value,
       bottom: rect.bottom + containerScrollY.value - containerTop.value,
       width: rect.width,
-      height: rect.height,
+      height: rect.height
     }
     // console.log(containerScrollY.value, windowY.value, containerTop.value, computedRect)
     // debugger
@@ -256,12 +334,10 @@ function selectCellOver(attrs: ICellAttrs) {
     let d: ICellAttrs = startCellAttrs.value
     // console.log(controlState.value,shiftState.value)
     // 避免不按ctrl时拖动选中多个cell
-    if (!controlState.value)
-      d = endCellAttrs.value
+    if (!controlState.value) d = endCellAttrs.value
 
     // shfit 时点击其他选择多个
-    if (shiftState.value)
-      d = startCellAttrs.value
+    if (shiftState.value) d = startCellAttrs.value
 
     const values = getCurrentSelectionValues(endCellAttrs.value, d)
     currentSelectionValues.value = values
@@ -277,8 +353,7 @@ function selectCellOver(attrs: ICellAttrs) {
 
 function onMouseup(e: MouseEvent, attrs: ICellAttrs) {
   // console.log('onMouseup', e)
-  if (e.buttons === 0 && e.button === 0)
-    selectCellOver(attrs)
+  if (e.buttons === 0 && e.button === 0) selectCellOver(attrs)
 }
 
 async function onDblclick(e: MouseEvent, attrs: ICellAttrs) {
@@ -292,7 +367,7 @@ async function onDblclick(e: MouseEvent, attrs: ICellAttrs) {
         x: rect.left,
         y: rect.top,
         width: rect.width,
-        height: rect.height,
+        height: rect.height
       })
       dblclickCellAttrs.value = attrs
     }
@@ -324,7 +399,7 @@ function onMouseenter(e: MouseEvent, attrs: ICellAttrs) {
         x: rect.left,
         y: rect.top,
         width: rect.width,
-        height: rect.height,
+        height: rect.height
       })
     }
   }
@@ -356,7 +431,7 @@ async function onContainerScroll(e: Event) {
   if (eventTarget) {
     emit('scroll', {
       scrollLeft: eventTarget.scrollLeft ?? 0,
-      scrollTop: eventTarget.scrollTop ?? 0,
+      scrollTop: eventTarget.scrollTop ?? 0
     })
 
     let shouldTrigger = false
@@ -364,7 +439,9 @@ async function onContainerScroll(e: Event) {
     // be aware of difference between clientHeight & offsetHeight & window.getComputedStyle().height
     const scrollBottom = eventTarget.scrollTop + eventTarget.clientHeight
     // 滚到底了且是向下滚动的
-    shouldTrigger = eventTarget.scrollHeight - scrollBottom <= 0 && eventTarget.scrollTop > internalScrollY.value
+    shouldTrigger =
+      eventTarget.scrollHeight - scrollBottom <= 0 &&
+      eventTarget.scrollTop > internalScrollY.value
     // console.log(shouldTrigger,internalScrollY.value)
     internalScrollY.value = eventTarget.scrollTop
     // console.log(eventTarget.scrollHeight, scrollBottom, eventTarget.scrollTop, eventTarget.clientHeight)
@@ -374,11 +451,10 @@ async function onContainerScroll(e: Event) {
         scrollToBottomLoading.value = true
         await onScrollToBottom?.value?.({
           xAxisScrollbar: xAxisScrollbar.value!,
-          yAxisScrollbar: yAxisScrollbar.value!,
+          yAxisScrollbar: yAxisScrollbar.value!
         })
         // emit('scrolltobottom')
-      }
-      finally {
+      } finally {
         scrollToBottomLoading.value = false
       }
     }
@@ -392,7 +468,7 @@ async function onContainerScroll(e: Event) {
 function onDrop(e: DragEvent, attrs: ICellAttrs) {
   // console.log('onDrop', e, attrs)
   onCellDrop?.value?.(dragCellAttrs.value!, attrs)
-  // const result = 
+  // const result =
   // if (result !== false) {
   //   if (dragCellAttrs.value)
   //     attrs.item.value = cloneDeep(dragCellAttrs.value.item.value)
@@ -415,28 +491,22 @@ function selectColumn(idx: number, value = true) {
   forEach(dataSource.value, (row) => {
     const item = row.cells[idx]
     item.selected = value
-    if (value)
-      selectedCellSet.value.add(item)
-
-    else
-      selectedCellSet.value.delete(item)
+    if (value) selectedCellSet.value.add(item)
+    else selectedCellSet.value.delete(item)
   })
 }
 
 function selectRow(idx: number, value = true) {
   forEach(dataSource.value[idx].cells, (item) => {
     item.selected = value
-    if (value)
-      selectedCellSet.value.add(item)
-
-    else
-      selectedCellSet.value.delete(item)
+    if (value) selectedCellSet.value.add(item)
+    else selectedCellSet.value.delete(item)
   })
 }
 onKeyStroke('Delete', (event) => {
   return onKeyStrokeDelete?.value?.({
     selectedCellSet: selectedCellSet.value,
-    event,
+    event
   })
 })
 // <{
@@ -462,20 +532,32 @@ provide(
     // drag: onDrag,
     drop: onDrop,
     dragstart: onDragstart,
-    dragend: onDragend,
-  }),
+    dragend: onDragend
+  })
 )
 </script>
 
 <template>
   <div ref="wrapperRef" class="vue-dom-sheet-wrapper">
-    <VirtualList ref="containerRef" table table-class="vue-dom-sheet-virtual-table" class="vue-dom-sheet-virtual-list"
-      data-key="key" :data-sources="dataSource" :data-component="itemComponent" :item-scoped-slots="itemScopedSlots"
-      item-tag="tr" @scroll.passive="onContainerScroll" :extra-props="cellExtraProps">
+    <VirtualList
+      ref="containerRef"
+      table
+      table-class="vue-dom-sheet-virtual-table"
+      class="vue-dom-sheet-virtual-list"
+      data-key="key"
+      :data-sources="dataSource"
+      :data-component="itemComponent"
+      :item-scoped-slots="itemScopedSlots"
+      item-tag="tr"
+      :extra-props="cellExtraProps"
+      @scroll.passive="onContainerScroll">
       <template #thead>
         <thead class="vue-dom-sheet-virtual-table-head">
           <tr>
-            <th v-for="(t, i) in columns" :key="i" class="vue-dom-sheet-virtual-table-head-cell"
+            <th
+              v-for="(t, i) in columns"
+              :key="i"
+              class="vue-dom-sheet-virtual-table-head-cell"
               @click.stop="selectColumn(i)">
               {{ t.title }}
             </th>
@@ -483,22 +565,35 @@ provide(
         </thead>
       </template>
       <template #colgroup>
-        <col v-for="col in columns" :key="col.key" :style="{
-          'min-width': `${col.width}px`,
-        }" :width="col.width">
+        <col
+          v-for="col in columns"
+          :key="col.key"
+          :style="{
+            'min-width': `${col.width}px`
+          }"
+          :width="col.width" />
       </template>
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />
         <ContextMenu :context="menuContext">
-          <slot name="context-menu" :attrs="contextMenuAttrs" :selected-cell-set="selectedCellSet"
+          <slot
+            name="context-menu"
+            :attrs="contextMenuAttrs"
+            :selected-cell-set="selectedCellSet"
             :menu-context="menuContext" />
         </ContextMenu>
         <Popover :context="valueSelectorContext" placement="bottom-start">
-          <slot name="value-selector" :attrs="dblclickCellAttrs" :visible="valueSelectorContext.visible.value"
+          <slot
+            name="value-selector"
+            :attrs="dblclickCellAttrs"
+            :visible="valueSelectorContext.visible.value"
             :popover-context="valueSelectorContext" />
         </Popover>
         <Popover :context="showDetailContext" placement="bottom-start">
-          <slot name="detail" :attrs="detailCellAttrs" :visible="showDetailContext.visible.value"
+          <slot
+            name="detail"
+            :attrs="detailCellAttrs"
+            :visible="showDetailContext.visible.value"
             :popover-context="showDetailContext" />
         </Popover>
       </template>
@@ -508,7 +603,7 @@ provide(
 
 <style lang="scss">
 .vue-dom-sheet-wrapper {
-  --color-virtual-table-head-cell-border: #EEF0F4;
+  --color-virtual-table-head-cell-border: #eef0f4;
   @apply relative flex;
 
   // padding: 10px;
@@ -519,7 +614,6 @@ provide(
 
   .vue-dom-sheet-virtual-table {
     @apply w-auto table-fixed border-collapse text-center bg-white;
-
 
     .vue-dom-sheet-virtual-table-head {
       @apply sticky top-0 left-0 z-[1];
@@ -538,6 +632,5 @@ provide(
     // margin-right: 20px;
     // padding-right: 1px;
   }
-
 }
 </style>
