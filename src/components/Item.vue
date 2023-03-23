@@ -153,12 +153,13 @@ defineOptions({
 <style lang="scss">
 .vue-dom-sheet-cell {
   --color-sheet-cell-border: #eef0f4;
-
+  --color-sheet-cell-selected-bg: rgb(17 24 39 / 0.1);
+  --color-sheet-cell-disabled-bg: rgba(192, 196, 204, 0.1);
+  --color-sheet-cell-has-note-bg: #3380ff;
   @apply p-0 border h-[48px] cursor-default select-none relative;
   border-color: var(--color-sheet-cell-border);
 
   &.selected::before {
-    --color-sheet-cell-selected-bg: rgb(17 24 39 / 0.1);
     position: absolute;
     content: '';
     left: 0px;
@@ -170,7 +171,6 @@ defineOptions({
   }
 
   &.disabled::before {
-    --color-sheet-cell-disabled-bg: rgba(192, 196, 204, 0.1);
     position: absolute;
     content: '';
     left: 0px;
@@ -183,7 +183,6 @@ defineOptions({
   }
 
   .has-note::after {
-    --color-sheet-cell-has-note-bg: #3380ff;
     // background-color: #3380FF;
     content: '';
     position: absolute;

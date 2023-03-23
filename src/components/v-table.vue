@@ -539,6 +539,17 @@ provide(
 
 <template>
   <div ref="wrapperRef" class="vue-dom-sheet-wrapper">
+    <div class="vue-dom-sheet-virtual-table-head">
+      <div class="vue-dom-sheet-virtual-table-head-row">
+        <div
+          v-for="(t, i) in columns"
+          :key="i"
+          class="vue-dom-sheet-virtual-table-head-row-cell"
+          @click.stop="selectColumn(i)">
+          {{ t.title }}
+        </div>
+      </div>
+    </div>
     <VirtualList
       ref="containerRef"
       table
@@ -551,19 +562,19 @@ provide(
       item-tag="tr"
       :extra-props="cellExtraProps"
       @scroll.passive="onContainerScroll">
-      <template #thead>
-        <thead class="vue-dom-sheet-virtual-table-head">
-          <tr>
-            <th
-              v-for="(t, i) in columns"
-              :key="i"
-              class="vue-dom-sheet-virtual-table-head-cell"
-              @click.stop="selectColumn(i)">
-              {{ t.title }}
-            </th>
-          </tr>
-        </thead>
-      </template>
+      <!-- <template #thead>
+                      <thead class="vue-dom-sheet-virtual-table-head">
+                        <tr>
+                          <th
+                            v-for="(t, i) in columns"
+                            :key="i"
+                            class="vue-dom-sheet-virtual-table-head-cell"
+                            @click.stop="selectColumn(i)">
+                            {{ t.title }}
+                          </th>
+                        </tr>
+                      </thead>
+                    </template> -->
       <template #colgroup>
         <col
           v-for="col in columns"
@@ -604,7 +615,7 @@ provide(
 <style lang="scss">
 .vue-dom-sheet-wrapper {
   --color-virtual-table-head-cell-border: #eef0f4;
-  @apply relative flex;
+  position: relative;
 
   // padding: 10px;
   .ps__rail-x,
@@ -612,25 +623,52 @@ provide(
     z-index: 2;
   }
 
-  .vue-dom-sheet-virtual-table {
-    @apply w-auto table-fixed border-collapse text-center bg-white;
+  .vue-dom-sheet-virtual-table-head {
+    @apply sticky top-0 left-0 z-[1] flex;
+    padding-left: 1px;
 
-    .vue-dom-sheet-virtual-table-head {
-      @apply sticky top-0 left-0 z-[1];
+    &-row {
+      width: 100%;
+      display: flex;
+      @apply border-t border-l;
+      border-color: var(--color-virtual-table-head-cell-border);
 
-      .vue-dom-sheet-virtual-table-head-cell {
-        @apply p-0 h-[48px] text-center border cursor-pointer bg-white;
+      &-cell {
+        cursor: pointer;
+        background-color: #ffffff;
+        padding: 0px;
+        text-align: center;
+        width: 120px;
+        height: calc(48px);
+        flex-grow: 0;
+        flex-shrink: 0;
+        border-right-width: 1px;
+        // border-bottom-width: 1px;
         border-color: var(--color-virtual-table-head-cell-border);
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
   }
 
+  .vue-dom-sheet-virtual-table {
+    @apply w-auto table-fixed border-collapse text-center bg-white;
+  }
+
   .vue-dom-sheet-virtual-list {
     @apply relative w-full;
+    // border-t
+    // border-color: var(--color-virtual-table-head-cell-border);
     padding-left: 1px;
     padding-bottom: 2px;
+    // padding-top: 1px;
+    // overflow: visible;
     // margin-right: 20px;
     // padding-right: 1px;
+    // > div[role='group'] {
+    //   overflow: visible;
+    // }
   }
 }
 </style>
