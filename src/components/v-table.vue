@@ -67,6 +67,7 @@ const props = withDefaults(
     cellExtraProps?: Record<string, unknown>
     debug?: boolean
     onContextMenuPreventDefault?: boolean
+    selectionBorderOffest?: number
   }>(),
   {
     debug: false,
@@ -79,7 +80,8 @@ const props = withDefaults(
     onCellDrop: undefined,
     onCellDragstart: undefined,
     onCellDragend: undefined,
-    cellExtraProps: undefined
+    cellExtraProps: undefined,
+    selectionBorderOffest: undefined
   }
 )
 const emit = defineEmits<{
@@ -103,7 +105,8 @@ const {
   onCellDragstart,
   onCellDrop,
   debug,
-  cellExtraProps
+  cellExtraProps,
+  selectionBorderOffest
 } = toRefs(props)
 const { context: valueSelectorContext } = usePopover()
 const { context: showDetailContext } = usePopover()
@@ -159,7 +162,8 @@ const {
   window: {
     scrollX: windowX,
     scrollY: windowY
-  }
+  },
+  borderOffest: selectionBorderOffest.value
 })
 
 const currentSelectionValues = ref<IDataSourceItem[]>()

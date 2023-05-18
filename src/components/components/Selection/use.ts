@@ -2,10 +2,15 @@ import { computed, ref } from 'vue-demi'
 import { pick } from 'lodash-es'
 import type { ICellAttrs } from '../../types'
 
-import type { ISelectionContext, ISelectionRect, useSelectionOptions } from './type'
-
+import type {
+  ISelectionContext,
+  ISelectionRect,
+  useSelectionOptions
+} from './type'
+export const ringWidth = 2
 export function useSelection(options: useSelectionOptions) {
-  const selectionBorderOffest = 0
+  const selectionBorderOffest = options.borderOffest ?? -ringWidth // options.borderOffest ?? 0
+  // const padding = [0, 0, 0, 0]
   const context: ISelectionContext = {}
   const selectionPosition = ref<ISelectionRect>({
     left: 0,
@@ -13,7 +18,7 @@ export function useSelection(options: useSelectionOptions) {
     top: 0,
     bottom: 0,
     width: 0,
-    height: 0,
+    height: 0
   })
 
   const resetSelectionPosition = ref<ISelectionRect>({
@@ -22,7 +27,7 @@ export function useSelection(options: useSelectionOptions) {
     top: 0,
     bottom: 0,
     width: 0,
-    height: 0,
+    height: 0
   })
   const startCellAttrs = ref<ICellAttrs>()
   const endCellAttrs = ref<ICellAttrs>()
@@ -38,23 +43,32 @@ export function useSelection(options: useSelectionOptions) {
       selectionPosition.value.width = resetSelectionPosition.value.width
       selectionPosition.value.left = resetSelectionPosition.value.left
       selectionPosition.value.right = resetSelectionPosition.value.right
-    }
-    else if (col === 'y') {
+    } else if (col === 'y') {
       selectionPosition.value.height = resetSelectionPosition.value.height
       selectionPosition.value.top = resetSelectionPosition.value.top
       selectionPosition.value.bottom = resetSelectionPosition.value.bottom
-    }
-    else {
+    } else {
       Object.assign(selectionPosition.value, resetSelectionPosition.value)
     }
   }
 
   const selectionStyle = computed(() => {
-    return Object.entries(pick(selectionPosition.value, ['left', 'right', 'top', 'bottom', 'width', 'height'])).reduce<Record<string, string>>((acc, [key, value]) => {
-      if (['left', 'right', 'top', 'bottom'].includes(key))
+    return Object.entries(
+      pick(selectionPosition.value, [
+        'left',
+        'right',
+        'top',
+        'bottom',
+        'width',
+        'height'
+      ])
+    ).reduce<Record<string, string>>((acc, [key, value]) => {
+      //
+      if (['left', 'top', 'right', 'bottom'].includes(key)) {
         acc[key] = `${value - selectionBorderOffest}px`
-      else
-        acc[key] = `${value}px`
+      } else {
+        acc[key] = `${value - ringWidth * 2}px`
+      }
 
       return acc
     }, {})
@@ -69,6 +83,6 @@ export function useSelection(options: useSelectionOptions) {
     assign,
     reset,
     selectionStyle,
-    context,
+    context
   }
 }

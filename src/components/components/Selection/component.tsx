@@ -6,11 +6,11 @@ export const Selection = defineComponent({
   name: 'CellSelection',
   props: {
     context: {
-      type: Object as PropType<ISelectionContext>,
+      type: Object as PropType<ISelectionContext>
     },
     styleObject: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   setup(props) {
     const { context, styleObject } = toRefs(props)
@@ -22,9 +22,8 @@ export const Selection = defineComponent({
         return dom.value
       },
       () => {
-        if (context.value)
-          context.value.el = dom.value
-      },
+        if (context.value) context.value.el = dom.value
+      }
     )
     const unwatch = watch(
       () => {
@@ -33,15 +32,20 @@ export const Selection = defineComponent({
       () => {
         flag.value = true
         unwatch()
-      },
+      }
     )
     return {
       dom,
-      flag,
+      flag
     }
   },
   // bg-gray-900 bg-opacity-10
   render() {
-    return this.flag ? <div ref="dom" style={this.styleObject} class="vue-dom-sheet-selection"></div> : undefined
-  },
+    return this.flag ? (
+      <div
+        ref="dom"
+        style={this.styleObject}
+        class="vue-dom-sheet-selection"></div>
+    ) : undefined
+  }
 })
