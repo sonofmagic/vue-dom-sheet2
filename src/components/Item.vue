@@ -34,7 +34,7 @@ const {
   mouseleave,
   mousemove,
   mouseup,
-  drag,
+  // drag,
   drop,
   dragstart,
   dragend
@@ -42,12 +42,13 @@ const {
 
 const { index: rowIndex, source, attrs, listeners } = toRefs(props)
 
-const currentAttrs = computed(() => {
-  return typeof attrs?.value === 'function'
-    ? (item: IDataSourceItem<unknown>, colIndex: number) =>
-        attrs?.value(item, colIndex, source.value, rowIndex.value, colIndex)
-    : (...args: any[]) => attrs?.value
-})
+function currentAttrs(item: IDataSourceItem<unknown>, colIndex: number) {
+  if (typeof attrs?.value === 'function') {
+    return attrs?.value(item, colIndex, source.value, rowIndex.value)
+  } else {
+    return attrs?.value
+  }
+}
 
 defineOptions({
   name: 'DomSheetCell'
@@ -158,7 +159,7 @@ defineOptions({
   --color-sheet-cell-has-note-bg: #3380ff;
   @apply p-0 border h-[48px] cursor-default select-none relative;
   border-color: var(--color-sheet-cell-border);
-
+  //  hover:bg-[#F7FAFF]
   &.selected::before {
     position: absolute;
     content: '';

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, provide, reactive, ref, shallowRef, toRefs } from 'vue-demi'
 import { forEach, throttle } from 'lodash-es'
-import type { MaybeElement } from '@vueuse/core'
 import { onKeyStroke, unrefElement, useScroll } from '@vueuse/core'
 import PerfectScrollbar from 'perfect-scrollbar'
 import type { IContextMenuContext } from './components'
@@ -114,8 +113,8 @@ const { x: windowX, y: windowY } = useScroll(window)
 const { shiftState, controlState } = useKeyBoard()
 
 const { context: menuContext } = useContextMenu()
-const containerRef = shallowRef<MaybeElement>()
-const wrapperRef = shallowRef<MaybeElement>()
+const containerRef = shallowRef<HTMLElement>()
+const wrapperRef = shallowRef<HTMLElement>()
 const yAxisScrollbar = shallowRef<PerfectScrollbar>()
 const xAxisScrollbar = shallowRef<PerfectScrollbar>()
 const {

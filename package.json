@@ -17,7 +17,7 @@
     "build2": "vue-demi-switch 2 && vite build",
     "build3": "vue-demi-switch 3 vue3 && vite build",
     "vue:fix": "vue-demi-fix",
-    "sync": "open-cli https://npmmirror.com/sync/vue-dom-sheet"
+    "sync": "cnpm sync vue-dom-sheet"
   },
   "dependencies": {
     "vue-demi": "^0.14.4"
@@ -45,7 +45,6 @@
     "@vue-macros/volar": "^0.9.8",
     "@vue/composition-api": "^1.7.1",
     "@vueuse/core": "^10.1.2",
-    "add": "^2.0.6",
     "autoprefixer": "^10.4.14",
     "core-js": "^3.30.2",
     "dayjs": "^1.11.7",
@@ -79,7 +78,7 @@
   "engines": {
     "pnpm": ">=7.10.0"
   },
-  "packageManager": "pnpm@7.16.0",
+  "packageManager": "pnpm@8.5.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sonofmagic/vue-dom-sheet2.git"

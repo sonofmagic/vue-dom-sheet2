@@ -11,11 +11,11 @@ export const Popover = defineComponent({
   name: 'SheetPopover',
   props: {
     context: {
-      type: Object as PropType<IPopoverContext>,
+      type: Object as PropType<IPopoverContext>
     },
     placement: {
-      type: String as PropType<Placement>,
-    },
+      type: String as PropType<Placement>
+    }
   },
   setup(props) {
     const visible = ref(false)
@@ -37,9 +37,9 @@ export const Popover = defineComponent({
             width,
             height,
             bottom,
-            right,
+            right
           }
-        },
+        }
       }
       if (dom.value) {
         // const rect = dom.value.getBoundingClientRect()
@@ -53,15 +53,15 @@ export const Popover = defineComponent({
             // }),
             shift(),
             // autoPlacement(),
-            flip(),
+            flip()
             // {
             //   fallbackPlacements: ['top-start'],
             // }
-          ],
+          ]
         }).then(({ x, y }) => {
           Object.assign(dom.value!.style, {
             left: `${x}px`,
-            top: `${y}px`,
+            top: `${y}px`
           })
           visible.value = true
         })
@@ -81,7 +81,7 @@ export const Popover = defineComponent({
           context.value.close = close
           context.value.visible = visible
         }
-      },
+      }
     )
 
     onClickOutside(dom, () => {
@@ -90,14 +90,17 @@ export const Popover = defineComponent({
 
     return {
       visible,
-      dom,
+      dom
     }
   },
   render() {
     return (
-      <div ref="dom" style={{ visibility: this.visible ? 'visible' : 'hidden' }} class="vue-dom-sheet-popover">
+      <div
+        ref="dom"
+        style={{ visibility: this.visible ? 'visible' : 'hidden' }}
+        class="vue-dom-sheet-popover">
         {this.$slots.default}
       </div>
     )
-  },
+  }
 })

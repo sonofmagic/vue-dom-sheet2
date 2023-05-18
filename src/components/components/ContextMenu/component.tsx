@@ -1,19 +1,19 @@
 import type { PropType } from 'vue-demi'
-import { Ref, defineComponent, onMounted, ref, toRefs, watch } from 'vue-demi'
+import { defineComponent, ref, toRefs, watch } from 'vue-demi'
 import { onClickOutside } from '@vueuse/core'
 import type { ReferenceElement } from '@floating-ui/dom'
-import { autoPlacement, computePosition, flip, offset, shift } from '@floating-ui/dom'
+import { autoPlacement, computePosition, offset, shift } from '@floating-ui/dom'
 import type { IPosition } from '../../types'
 import type { IContextMenuContext } from './type'
-import { IContextMenuProps } from './type'
+// import { IContextMenuProps } from './type'
 import './component.scss'
 const fixedTableHeaderHeight = 48
 export const ContextMenu = defineComponent({
   name: 'ContextMenu',
   props: {
     context: {
-      type: Object as PropType<IContextMenuContext>,
-    },
+      type: Object as PropType<IContextMenuContext>
+    }
   },
   setup(props) {
     const { context } = toRefs(props)
@@ -40,9 +40,9 @@ export const ContextMenu = defineComponent({
             width,
             height,
             bottom,
-            right,
+            right
           }
-        },
+        }
       }
       if (menuRef.value) {
         // const rect = menuRef.value.getBoundingClientRect()
@@ -51,19 +51,19 @@ export const ContextMenu = defineComponent({
           placement: 'right',
           middleware: [
             offset({
-              mainAxis: 10,
+              mainAxis: 10
               // alignmentAxis: -rect.height / 2,
             }),
             // flip(),
             autoPlacement(),
             shift({
-              padding: fixedTableHeaderHeight,
-            }),
-          ],
+              padding: fixedTableHeaderHeight
+            })
+          ]
         }).then(({ x, y }) => {
           Object.assign(menuRef.value!.style, {
             left: `${x}px`,
-            top: `${y}px`,
+            top: `${y}px`
           })
           visible.value = true
         })
@@ -86,20 +86,23 @@ export const ContextMenu = defineComponent({
           context.value.close = close
           context.value.show = show
         }
-      },
+      }
     )
 
     return {
       visible,
       menuRef,
-      close,
+      close
     }
   },
   render() {
     return (
-      <div style={{ visibility: this.visible ? 'visible' : 'hidden' }} ref="menuRef" class="vue-dom-sheet-context-menu">
+      <div
+        style={{ visibility: this.visible ? 'visible' : 'hidden' }}
+        ref="menuRef"
+        class="vue-dom-sheet-context-menu">
         {this.$slots.default}
       </div>
     )
-  },
+  }
 })

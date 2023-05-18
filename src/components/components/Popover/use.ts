@@ -10,9 +10,9 @@ export function usePopover() {
       throw new Error('context is null')
     },
     el: undefined,
-    visible: ref<boolean>(false),
+    visible: ref<boolean>(false)
   }
   return {
-    context,
+    context
   }
 }

@@ -12,13 +12,16 @@ const { colIndex, rowIndex, item, source } = toRefs(props)
 </script>
 
 <template>
-  <div v-if="item.value" draggable class="border-l-2 border-[blue] h-full flex justify-between">
+  <div
+    v-if="item.value"
+    draggable
+    class="border-l-2 border-[blue] h-full flex justify-between">
     <div
       :class="{
         'cursor-pointer': Boolean(item.value),
-        'has-note': Boolean(item.value.remark),
-      }" class="text-left flex flex-col justify-evenly pl-1.5"
-    >
+        'has-note': Boolean(item.value.remark)
+      }"
+      class="text-left flex flex-col justify-evenly pl-1.5">
       <div class="text-[13px] text-[#333333]">
         {{ item.value.name }}
       </div>
@@ -37,6 +40,4 @@ const { colIndex, rowIndex, item, source } = toRefs(props)
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

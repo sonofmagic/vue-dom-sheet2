@@ -15,4 +15,6 @@ export interface ICellEvents {
   dragend?: (payload: DragEvent, attrs: ICellAttrs) => void
 }
 
-export const CellEventsSymbol = Symbol('CellEventsSymbol') as InjectionKey<UnwrapNestedRefs<ICellEvents>>
+export const CellEventsSymbol = Symbol('CellEventsSymbol') as InjectionKey<
+  UnwrapNestedRefs<ICellEvents>
+>
