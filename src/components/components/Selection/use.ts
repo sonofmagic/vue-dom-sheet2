@@ -3,9 +3,10 @@ import { pick } from 'lodash-es'
 import type { ICellAttrs } from '../../types'
 
 import type { ISelectionContext, ISelectionRect, useSelectionOptions } from './type'
-
+export const ringWidth = 2
 export function useSelection(options: useSelectionOptions) {
-  const selectionBorderOffest = 0
+  const selectionBorderOffest = options.borderOffest ?? -ringWidth
+  
   const context: ISelectionContext = {}
   const selectionPosition = ref<ISelectionRect>({
     left: 0,
@@ -50,11 +51,22 @@ export function useSelection(options: useSelectionOptions) {
   }
 
   const selectionStyle = computed(() => {
-    return Object.entries(pick(selectionPosition.value, ['left', 'right', 'top', 'bottom', 'width', 'height'])).reduce<Record<string, string>>((acc, [key, value]) => {
-      if (['left', 'right', 'top', 'bottom'].includes(key))
+    return Object.entries(
+      pick(selectionPosition.value, [
+        'left',
+        'right',
+        'top',
+        'bottom',
+        'width',
+        'height'
+      ])
+    ).reduce<Record<string, string>>((acc, [key, value]) => {
+      //
+      if (['left', 'top', 'right', 'bottom'].includes(key)) {
         acc[key] = `${value - selectionBorderOffest}px`
-      else
-        acc[key] = `${value}px`
+      } else {
+        acc[key] = `${value - ringWidth * 2}px`
+      }
 
       return acc
     }, {})

@@ -42,12 +42,13 @@ const {
 
 const { index: rowIndex, source, attrs, listeners } = toRefs(props)
 
-const currentAttrs = computed(() => {
-  return typeof attrs?.value === 'function'
-    ? (item: IDataSourceItem<unknown>, colIndex: number) =>
-        attrs?.value(item, colIndex, source.value, rowIndex.value, colIndex)
-    : (...args: any[]) => attrs?.value
-})
+function currentAttrs(item: IDataSourceItem<unknown>, colIndex: number) {
+  if (typeof attrs?.value === 'function') {
+    return attrs?.value(item, colIndex, source.value, rowIndex.value)
+  } else {
+    return attrs?.value
+  }
+}
 
 defineOptions({
   name: 'DomSheetCell'

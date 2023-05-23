@@ -21,6 +21,7 @@ export interface useSelectionOptions {
     scrollX: Ref<number>
     scrollY: Ref<number>
   }
+  borderOffest: number
 }
 
 export interface ISelectionContext {
