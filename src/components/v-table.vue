@@ -539,25 +539,13 @@ provide(
 
 <template>
   <div ref="wrapperRef" class="vue-dom-sheet-wrapper">
-    <VirtualList
-      ref="containerRef"
-      table
-      table-class="vue-dom-sheet-virtual-table"
-      class="vue-dom-sheet-virtual-list"
-      data-key="key"
-      :data-sources="dataSource"
-      :data-component="itemComponent"
-      :item-scoped-slots="itemScopedSlots"
-      item-tag="tr"
-      :extra-props="cellExtraProps"
-      @scroll.passive="onContainerScroll">
+    <VirtualList ref="containerRef" table table-class="vue-dom-sheet-virtual-table" class="vue-dom-sheet-virtual-list"
+      data-key="key" :data-sources="dataSource" :data-component="itemComponent" :item-scoped-slots="itemScopedSlots"
+      item-tag="tr" :extra-props="cellExtraProps" @scroll.passive="onContainerScroll">
       <template #thead>
         <thead class="vue-dom-sheet-virtual-table-head">
           <tr>
-            <th
-              v-for="(t, i) in columns"
-              :key="i"
-              class="vue-dom-sheet-virtual-table-head-cell"
+            <th v-for="(t, i) in columns" :key="i" class="vue-dom-sheet-virtual-table-head-cell"
               @click.stop="selectColumn(i)">
               {{ t.title }}
             </th>
@@ -565,35 +553,22 @@ provide(
         </thead>
       </template>
       <template #colgroup>
-        <col
-          v-for="col in columns"
-          :key="col.key"
-          :style="{
-            'min-width': `${col.width}px`
-          }"
-          :width="col.width" />
+        <col v-for="col in columns" :key="col.key" :style="{
+          'min-width': `${col.width}px`
+        }" :width="col.width" />
       </template>
       <template #append>
         <Selection :context="selectionContext" :style-object="selectionStyle" />
         <ContextMenu :context="menuContext">
-          <slot
-            name="context-menu"
-            :attrs="contextMenuAttrs"
-            :selected-cell-set="selectedCellSet"
+          <slot name="context-menu" :attrs="contextMenuAttrs" :selected-cell-set="selectedCellSet"
             :menu-context="menuContext" />
         </ContextMenu>
         <Popover :context="valueSelectorContext" placement="bottom-start">
-          <slot
-            name="value-selector"
-            :attrs="dblclickCellAttrs"
-            :visible="valueSelectorContext.visible.value"
+          <slot name="value-selector" :attrs="dblclickCellAttrs" :visible="valueSelectorContext.visible.value"
             :popover-context="valueSelectorContext" />
         </Popover>
         <Popover :context="showDetailContext" placement="bottom-start">
-          <slot
-            name="detail"
-            :attrs="detailCellAttrs"
-            :visible="showDetailContext.visible.value"
+          <slot name="detail" :attrs="detailCellAttrs" :visible="showDetailContext.visible.value"
             :popover-context="showDetailContext" />
         </Popover>
       </template>
@@ -621,6 +596,7 @@ provide(
       .vue-dom-sheet-virtual-table-head-cell {
         @apply p-0 h-[48px] text-center border cursor-pointer bg-white;
         border-color: var(--color-virtual-table-head-cell-border);
+        font-weight: normal;
       }
     }
   }
