@@ -17,7 +17,7 @@
     "build2": "vue-demi-switch 2 && vite build",
     "build3": "vue-demi-switch 3 vue3 && vite build",
     "vue:fix": "vue-demi-fix",
-    "sync": "open-cli https://npmmirror.com/sync/vue-dom-sheet"
+    "sync": "cnpm sync vue-dom-sheet"
   },
   "dependencies": {
     "vue-demi": "latest"
